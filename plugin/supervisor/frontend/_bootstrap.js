@@ -1,0 +1,3 @@
+/**
+ * @const {lx.Plugin} Plugin
+ */

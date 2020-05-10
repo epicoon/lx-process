@@ -1,0 +1,20 @@
+name: lx/process
+
+autoload:
+  psr-4:
+    lx\process\:
+      - ''
+      - src
+
+service:
+  class: lx\process\Service
+
+  routes:
+    supervisor: {plugin: supervisor}
+
+  plugins: plugin
+  models: model
+
+  diProcessor:
+    interfaces:
+      lx\process\interfaces\ProcessRepositoryInterface: lx\process\FileProcessRepository
