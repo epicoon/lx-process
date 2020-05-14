@@ -69,6 +69,14 @@ class ProcessStatusData
     }
 
     /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * @param integer $pid
      */
     public function setPid($pid)

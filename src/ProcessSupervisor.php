@@ -95,15 +95,43 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
     }
 
     /**
+     * @param string $serviceName
+     * @param string $processName
+     * @return array
+     */
+    public function getProcessStatusesForService($serviceName, $processName = null)
+    {
+        $map = $this->repository->getMap();
+        $statusesData = $map->getStatusesData();
+
+        $result = [];
+        /** @var ProcessStatusData $statusData */
+        foreach ($statusesData as $statusData) {
+            if ($statusData->getServiceName() != $serviceName) {
+                continue;
+            }
+
+            if ($processName && $statusData->getName() != $processName) {
+                continue;
+            }
+
+            $result[] = $statusData->toHashMap();
+        }
+
+        return $result;
+    }
+
+    /**
      * @return array
      */
     public function getProcessStatuses()
     {
         $this->actualizeProcessStatuses();
 
-        $result = [];
         $map = $this->repository->getMap();
         $statusesData = $map->getStatusesData();
+
+        $result = [];
         /** @var ProcessStatusData $statusData */
         foreach ($statusesData as $statusData) {
             $result[] = $statusData->toHashMap();

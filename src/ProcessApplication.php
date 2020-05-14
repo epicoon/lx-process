@@ -9,6 +9,7 @@ use lx\I18nApplicationMap;
 use lx\Language;
 use lx\Router;
 use lx\User;
+use Exception;
 
 /**
  * Class ProcessApplication
@@ -36,17 +37,25 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
     /** @var bool */
     private $keepAlive;
 
+    /** @var int */
+    private $delay;
+
+    /** @var bool */
+    private $single;
+
     /**
      * ProcessApplication constructor.
      * @param array $config
      */
     public function __construct($config = [])
     {
-        $this->keepAlive = true;
-        $this->delay = ($config['delay'] ?? 2000) * 1000;
-
         $this->serviceName = $config['serviceName'] ?? '';
         $this->name = $config['processName'] ?? '';
+        $this->single = $config['single'] ?? false;
+        $this->checkSingleConstraint();
+
+        $this->keepAlive = true;
+        $this->delay = ($config['delay'] ?? 2000) * 1000;
 
         if (array_key_exists('processIndex', $config)) {
             $this->index = $config['processIndex'];
@@ -179,6 +188,28 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
             $this->processSupervisor->reborn($this);
         } else {
             $this->processSupervisor->register($this);
+        }
+    }
+
+    private function checkSingleConstraint()
+    {
+        if (!$this->single) {
+            return;
+        }
+
+        $statuses = $this->processSupervisor->getProcessStatusesForService(
+            $this->serviceName,
+            $this->name
+        );
+
+        if (!empty($statuses)) {
+            \lx::devLog(['_'=>[__FILE__,__CLASS__,__METHOD__,__LINE__],
+                '__trace__' => debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT&DEBUG_BACKTRACE_IGNORE_ARGS),
+                'msg' => "There was attempt to run process '{$this->name}' from service '{$this->serviceName}' "
+                    ."wich is singleton but the same process is already running",
+            ]);
+
+            throw new Exception('The same process is already running!');
         }
     }
 }
