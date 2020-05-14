@@ -52,7 +52,6 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
         $this->serviceName = $config['serviceName'] ?? '';
         $this->name = $config['processName'] ?? '';
         $this->single = $config['single'] ?? false;
-        $this->checkSingleConstraint();
 
         $this->keepAlive = true;
         $this->delay = ($config['delay'] ?? 2000) * 1000;
@@ -184,6 +183,7 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
 
     protected function init()
     {
+        $this->checkSingleConstraint();
         if (isset($this->index)) {
             $this->processSupervisor->reborn($this);
         } else {
@@ -202,14 +202,16 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
             $this->name
         );
 
-        if (!empty($statuses)) {
-            \lx::devLog(['_'=>[__FILE__,__CLASS__,__METHOD__,__LINE__],
-                '__trace__' => debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT&DEBUG_BACKTRACE_IGNORE_ARGS),
-                'msg' => "There was attempt to run process '{$this->name}' from service '{$this->serviceName}' "
-                    ."wich is singleton but the same process is already running",
-            ]);
+        foreach ($statuses as $status) {
+            if ($status['status'] == ProcessConst::PROCESS_STATUS_ACTIVE) {
+                \lx::devLog(['_'=>[__FILE__,__CLASS__,__METHOD__,__LINE__],
+                    '__trace__' => debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT&DEBUG_BACKTRACE_IGNORE_ARGS),
+                    'msg' => "There was attempt to run process '{$this->name}' from service '{$this->serviceName}' "
+                        ."wich is singleton but the same process is already running",
+                ]);
 
-            throw new Exception('The same process is already running!');
+                throw new Exception('The same process is already running!');
+            }
         }
     }
 }
