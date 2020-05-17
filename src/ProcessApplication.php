@@ -3,8 +3,6 @@
 namespace lx\process;
 
 use lx\AbstractApplication;
-use lx\FusionInterface;
-use lx\FusionTrait;
 use lx\I18nApplicationMap;
 use lx\Language;
 use lx\Router;
@@ -21,10 +19,8 @@ use Exception;
  * @property-read I18nApplicationMap $i18nMap
  * @property-read User $user
  */
-class ProcessApplication extends AbstractApplication implements FusionInterface
+class ProcessApplication extends AbstractApplication
 {
-    use FusionTrait;
-
     /** @var string */
     private $serviceName;
 
