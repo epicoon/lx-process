@@ -53,6 +53,14 @@ class ProcessStatusData
     }
 
     /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->statusCurrent == ProcessConst::PROCESS_STATUS_ACTIVE;
+    }
+
+    /**
      * @param int $status
      */
     public function setStatus($status)

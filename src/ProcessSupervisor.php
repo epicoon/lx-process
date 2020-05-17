@@ -6,6 +6,7 @@ use lx\BaseObject;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\ApplicationToolTrait;
+use lx\Math;
 use lx\process\interfaces\ProcessRepositoryInterface;
 
 /**
@@ -92,6 +93,17 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
         if ($renew) {
             $this->repository->renew();
         }
+    }
+
+    /**
+     * @param string $processName
+     * @param integer $processIndex
+     * @return ProcessStatusData
+     */
+    public function getProcessStatus($processName, $processIndex)
+    {
+        $map = $this->repository->getMap();
+        return $map->getStatusData($processName, $processIndex);
     }
 
     /**
@@ -268,6 +280,45 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
     /**
      * @param string $processName
      * @param integer $processIndex
+     * @param mixed $message
+     * @return bool
+     */
+    public function sendRequestToProcess($processName, $processIndex, $message)
+    {
+        $requestCode = Math::randHash();
+
+        $this->send($processName, $processIndex, [
+            ProcessConst::MESSAGE_TYPE_REQUEST,
+            serialize($message),
+            $requestCode
+        ]);
+
+        $triesLimit = 10;
+        $triesCounter = 0;
+        $response = new ProcessResponse();
+        while ($response->isEmpty() && $triesCounter < $triesLimit) {
+            sleep(1);
+            $response = $this->getRepository()->getProcessResponse($processName, $processIndex, $requestCode);
+            $triesCounter++;
+        }
+
+        return $response->getData();
+    }
+
+    /**
+     * @param string $processName
+     * @param integer $processIndex
+     * @param string $responseCode
+     * @param mixed $message
+     */
+    public function sendResponseFromProcess($processName, $processIndex, $responseCode, $message)
+    {
+        $this->getRepository()->sendResponseFromProcess($processName, $processIndex, $responseCode, $message);
+    }
+
+    /**
+     * @param string $processName
+     * @param integer $processIndex
      * @param bool $clear
      * @return array
      */
@@ -277,10 +328,16 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
         $result = [];
         foreach ($messages as $row) {
             $message = json_decode($row, true);
-            $result[] = [
+            $messageArray = [
                 'type' => $message[0],
-                'data' => ($message[0] == ProcessConst::MESSAGE_TYPE_COMMON) ? unserialize($message[1]) : $message[1],
+                'data' => ($message[0] == ProcessConst::MESSAGE_TYPE_REQUEST
+                    || $message[0] == ProcessConst::MESSAGE_TYPE_COMMON
+                ) ? unserialize($message[1]) : $message[1],
             ];
+            if (isset($message[2])) {
+                $messageArray['meta'] = $message[2];
+            }
+            $result[] = $messageArray;
         }
 
         return $result;

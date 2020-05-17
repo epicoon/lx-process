@@ -13,7 +13,8 @@ class ProcessConst
     const PROCESS_STATUS_CRASHED = 3;
 
     const MESSAGE_TYPE_SPECIAL = 11;
-    const MESSAGE_TYPE_COMMON = 12;
+    const MESSAGE_TYPE_REQUEST = 12;
+    const MESSAGE_TYPE_COMMON = 13;
 
     const DIRECTIVE_STOP = 21;
 }

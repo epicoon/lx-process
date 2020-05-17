@@ -3,6 +3,7 @@
 namespace lx\process\interfaces;
 
 use lx\process\ProcessMap;
+use lx\process\ProcessResponse;
 
 interface ProcessRepositoryInterface
 {
@@ -27,4 +28,20 @@ interface ProcessRepositoryInterface
      * @return array
      */
     public function getProcessInputMessages($processName, $processIndex, $clear = false);
+
+    /**
+     * @param string $processName
+     * @param integer $processIndex
+     * @param string $responseCode
+     * @param mixed $message
+     */
+    public function sendResponseFromProcess($processName, $processIndex, $responseCode, $message);
+
+    /**
+     * @param string $processName
+     * @param integer $processIndex
+     * @param string $requestCode
+     * @return ProcessResponse
+     */
+    public function getProcessResponse($processName, $processIndex, $requestCode);
 }

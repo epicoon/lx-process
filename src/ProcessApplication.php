@@ -54,7 +54,7 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
         $this->single = $config['single'] ?? false;
 
         $this->keepAlive = true;
-        $this->delay = ($config['delay'] ?? 2000) * 1000;
+        $this->delay = ($config['delay'] ?? 50) * 1000;
 
         if (array_key_exists('processIndex', $config)) {
             $this->index = $config['processIndex'];
@@ -82,12 +82,12 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
      * LIFE CYCLE
      ******************************************************************************************************************/
 
-    protected function beforeRun()
+    protected function beforeProcess()
     {
         // pass
     }
 
-    protected function beforeProcess()
+    protected function process()
     {
         // pass
     }
@@ -100,12 +100,16 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
         // pass
     }
 
-    protected function afterProcess()
+    /**
+     * @param mixed $request
+     * @return mixed
+     */
+    protected function processRequest($request)
     {
-        // pass
+        return null;
     }
 
-    protected function beforeClose()
+    protected function afterProcess()
     {
         // pass
     }
@@ -149,12 +153,12 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
 
     public function run()
     {
-        $this->beforeRun();
+        $this->beforeProcess();
 
         while ($this->keepAlive) {
             usleep($this->delay);
 
-            $this->beforeProcess();
+            $this->process();
 
             $messages = $this->processSupervisor->getProcessInputMessages($this->name, $this->index, true);
             foreach ($messages as $messageData) {
@@ -165,15 +169,21 @@ class ProcessApplication extends AbstractApplication implements FusionInterface
                         $this->keepAlive = false;
                         break;
                     }
+                } elseif ($type == ProcessConst::MESSAGE_TYPE_REQUEST) {
+                    $response = $this->processRequest($message);
+                    $this->processSupervisor->sendResponseFromProcess(
+                        $this->name,
+                        $this->index,
+                        $messageData['meta'],
+                        $response
+                    );
                 } elseif ($type == ProcessConst::MESSAGE_TYPE_COMMON) {
                     $this->processMessage($message);
                 }
             }
-
-            $this->afterProcess();
         }
 
-        $this->beforeClose();
+        $this->afterProcess();
     }
 
 

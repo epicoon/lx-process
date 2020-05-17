@@ -79,6 +79,41 @@ class FileProcessRepository implements ProcessRepositoryInterface
         return $matches[1];
     }
 
+    /**
+     * @param string $processName
+     * @param integer $processIndex
+     * @param string $responseCode
+     * @param mixed $message
+     */
+    public function sendResponseFromProcess($processName, $processIndex, $responseCode, $message)
+    {
+        $messageString = serialize($message);
+        $file = $this->getProcessResponseFile($processName, $processIndex, $responseCode);
+        $file->put($messageString);
+    }
+
+    /**
+     * @param string $processName
+     * @param integer $processIndex
+     * @param string $responseCode
+     * @return ProcessResponse
+     */
+    public function getProcessResponse($processName, $processIndex, $responseCode)
+    {
+        $response = new ProcessResponse();
+        $file = $this->getProcessResponseFile($processName, $processIndex, $responseCode);
+        if (!$file->exists()) {
+            return $response;
+        }
+
+        $messageString = $file->get();
+        $file->remove();
+        $message = unserialize($messageString);
+        $response->init($message);
+
+        return $response;
+    }
+
 
     /*******************************************************************************************************************
      * PRIVATE
@@ -109,5 +144,17 @@ class FileProcessRepository implements ProcessRepositoryInterface
     {
         $path = \lx::$conductor->getSystemPath('process');
         return new File($path . '/input_' . $processName . '_' . $processIndex);
+    }
+
+    /**
+     * @param string $processName
+     * @param integer $processIndex
+     * @param string $responseCode
+     * @return File
+     */
+    private function getProcessResponseFile($processName, $processIndex, $responseCode)
+    {
+        $path = \lx::$conductor->getSystemPath('process');
+        return new File($path . '/response_' . $processName . '_' . $processIndex . '_' . $responseCode);
     }
 }
