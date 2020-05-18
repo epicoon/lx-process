@@ -3,30 +3,6 @@
  * @const {lx.Snippet} Snippet
  */
 
-
-/*
-1. Процесс
-	+ в конфиге сервиса задаются
-	+ имеет pid, имя, индекс
-	+ регистрируется в ПроцессСупервизоре
-	+ запускается глобальный цикл
-	+ слушает сообщения из ПроцессСупервизора, адрессованные ему
-	- передает сообщения, которые будут прочитаны ПроцессСупервизором
-3. ПроцессСупервизор
-	+ регистрирует процесс в общем списке (pid, имя, индекс)
-	- имеет функционал управления и отслеживания состояния процессов
-		+ может отследить - упал ли процесс (самостоятельно закрылся без отметки о корректном завершении)
-		+ может заново поднять процесс
-		+ может остановить процесс
-		+ может удалить процесс
-		+ по имени и индексу позволяет передавать сообщения в демона
-			+ служебные сообщения ({"type":"special","code":"close"})
-			+ общие сообщения ({"type":"common","data":"..."})
-		- мониторит сообщения, приходящие от процессов, в т.ч. логи
-*/
-
-
-
 #lx:use lx.Form;
 
 #lx:model-collection processesList = {
@@ -119,7 +95,9 @@ function onProcessSend() {
 function onProcessRun() {
 	var index = this.parent.index,
 		proc = processesList.at(index);
+	Snippet->blocker.show();
 	^Respondent.rerunProcess(proc.name, proc.index).then(res=>{
+		Snippet->blocker.hide();
 		if (!res.success) {
 			lx.Tost.error(res.message || 'Unknown error');
 			return;
@@ -134,20 +112,22 @@ function onProcessStop() {
 		proc = processesList.at(index);
 	Snippet->blocker.show();
 	^Respondent.stopProcess(proc.name, proc.index).then(res=>{
+		Snippet->blocker.hide();
 		if (!res.success) {
 			lx.Tost.error(res.message || 'Unknown error');
 			return;
 		}
 
 		loadProcessesData();
-		Snippet->blocker.hide();
 	});
 }
 
 function onProcessClose() {
 	var index = this.parent.index,
 		proc = processesList.at(index);
+	Snippet->blocker.show();
 	^Respondent.deleteProcess(proc.name, proc.index).then(res=>{
+		Snippet->blocker.hide();
 		if (!res.success) {
 			lx.Tost.error(res.message || 'Unknown error');
 			return;
@@ -177,7 +157,9 @@ Snippet->>butSendMessage.click(()=>{
 
 	var proc = messageBox.__process;
 	closeMessageBox();
+	Snippet->blocker.show();
 	^Respondent.sendMessage(proc.name, proc.index, message).then(res=>{
+		Snippet->blocker.hide();
 		if (!res.success) {
 			lx.Tost.error(res.message || 'Unknown error');
 			return;
@@ -201,7 +183,9 @@ Snippet->>butAddProcess.click(()=>{
 			return;
 		}
 
+		Snippet->blocker.show();
 		^Respondent.addProcess(serviceName, processName).then(res=>{
+			Snippet->blocker.hide();
 			if (!res.success) {
 				lx.Tost.error(res.message || 'Unknown error');
 				return;

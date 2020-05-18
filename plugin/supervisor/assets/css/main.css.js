@@ -1,39 +1,24 @@
-var cssList = new lx.CssContext();
+#lx:use #lx:php(\lx::$app->getConfig('colorSchema'));
+#lx:use lx.MainCssContext;
 
-cssList.addClass('lx-process-slot', {
+cssContext.addClass('lx-process-slot', {
 	overflow: 'hidden',
 	whiteSpace: 'nowrap',
 	textOverflow: 'ellipsis',
 	backgroundColor: 'white'
 });
 
-cssList.addClass('lx-process-send', {
-	backgroundColor: 'orange'
-});
+cssContext.inheritClasses({
+	'lx-process-send' : { backgroundColor:coldMainColor,    '@icon': ['\\2709', 16] },
+	'lx-process-run'  : { backgroundColor:checkedMainColor, '@icon': ['\\21BB', 16] },
+	'lx-process-stop' : { backgroundColor:neutralMainColor, '@icon': ['\\2296', 16] },
+	'lx-process-close': { backgroundColor:hotMainColor,     '@icon': ['\\2297', 16] }
+}, 'ActiveButton');
 
-cssList.addClass('lx-process-run', {
-	backgroundColor: 'green'
-});
+cssContext.inheritClasses({
+	'lx-process-status-active': {backgroundColor: checkedSoftColor},
+	'lx-process-status-closed': {backgroundColor: neutralSoftColor},
+	'lx-process-status-crashed': {backgroundColor: hotSoftColor}
+}, 'Input');
 
-cssList.addClass('lx-process-stop', {
-	backgroundColor: 'yellow'
-});
-
-cssList.addClass('lx-process-close', {
-	backgroundColor: 'red'
-});
-
-cssList.addClass('lx-process-status-active', {
-	backgroundColor: 'green'
-});
-
-cssList.addClass('lx-process-status-closed', {
-	backgroundColor: 'yellow'
-});
-
-cssList.addClass('lx-process-status-crashed', {
-	backgroundColor: 'red'
-});
-
-
-return cssList.toString();
+return cssContext.toString();
