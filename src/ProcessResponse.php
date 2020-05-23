@@ -9,7 +9,7 @@ namespace lx\process;
 class ProcessResponse
 {
     /** @var mixed */
-    private $data;
+    private $data = null;
 
     /**
      * @return bool
