@@ -87,7 +87,7 @@ function onProcessSend() {
 
 	var messageBox = Snippet->>messageBox;
 	messageBox.__process = proc;
-	messageBox.setHeader('Message to process: ' + proc.serviceName + ', ' + proc.name + ', ' + proc.index);
+	messageBox.setHeaderText('Message to process: ' + proc.serviceName + ', ' + proc.name + ', ' + proc.index);
 	messageBox.show();
 	messageBox->>messageTextBox.focus();
 }
