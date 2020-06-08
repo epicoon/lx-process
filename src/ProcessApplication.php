@@ -102,7 +102,12 @@ class ProcessApplication extends AbstractApplication
      */
     protected function processRequest($request)
     {
-        return null;
+        $controller = $this->requestController;
+        if (!$controller) {
+            return null;
+        }
+
+        return $controller->run($request);
     }
 
     protected function afterProcess()
@@ -156,7 +161,7 @@ class ProcessApplication extends AbstractApplication
 
             $this->process();
 
-            $messages = $this->processSupervisor->getProcessInputMessages($this->name, $this->index, true);
+            $messages = $this->processSupervisor->readMessagesForProcessApplication($this->name, $this->index, true);
             foreach ($messages as $messageData) {
                 $type = $messageData['type'];
                 $message = $messageData['data'];
@@ -167,7 +172,7 @@ class ProcessApplication extends AbstractApplication
                     }
                 } elseif ($type == ProcessConst::MESSAGE_TYPE_REQUEST) {
                     $response = $this->processRequest($message);
-                    $this->processSupervisor->sendResponseFromProcess(
+                    $this->processSupervisor->sendResponseFromProcessApplication(
                         $this->name,
                         $this->index,
                         $messageData['meta'],
@@ -203,7 +208,7 @@ class ProcessApplication extends AbstractApplication
             return;
         }
 
-        $statuses = $this->processSupervisor->getProcessStatusesForService(
+        $statuses = $this->processSupervisor->getServiceProcesses(
             $this->serviceName,
             $this->name
         );

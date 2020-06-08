@@ -2,21 +2,29 @@
 
 namespace lx\process;
 
+use lx\process\interfaces\ProcessRepositoryInterface;
+
 /**
  * Class ProcessMap
  * @package lx\process
  */
 class ProcessMap
 {
+    /** @var ProcessRepositoryInterface */
+    private $repository;
+
     /** @var array */
     private array $map;
 
     /**
      * ProcessMap constructor.
+     * @param ProcessRepositoryInterface $repository
      * @param array $map
      */
-    public function __construct(array $map)
+    public function __construct(ProcessRepositoryInterface $repository, array $map)
     {
+        $this->repository = $repository;
+
         $this->map = [
             'name' => [],
             'key' => [],
@@ -33,9 +41,9 @@ class ProcessMap
     public function toArray()
     {
         $result = [];
-        /** @var ProcessStatusData $statusData */
-        foreach ($this->map['key'] as $statusData) {
-            $result[] = $statusData->toArray();
+        /** @var Process $process */
+        foreach ($this->map['key'] as $process) {
+            $result[] = $process->toArray();
         }
 
         return $result;
@@ -88,9 +96,9 @@ class ProcessMap
     /**
      * @param string $processName
      * @param integer $processIndex
-     * @return ProcessStatusData|null
+     * @return Process|null
      */
-    public function getStatusData($processName, $processIndex)
+    public function getProcess($processName, $processIndex) : ?Process
     {
         $key = $this->map['name'][$processName][$processIndex] ?? null;
         if (!$key) {
@@ -105,9 +113,9 @@ class ProcessMap
     }
 
     /**
-     * @return array
+     * @return Process[]
      */
-    public function getStatusesData()
+    public function getProcesses() : array
     {
         return $this->map['key'];
     }
@@ -127,7 +135,14 @@ class ProcessMap
     private function addRecord($pid, $serviceName, $name, $index, $status = ProcessConst::PROCESS_STATUS_ACTIVE)
     {
         $key = $name . '_' . $index;
-        $this->map['key'][$key] = new ProcessStatusData($pid, $serviceName, $name, $index, $status);
+        $this->map['key'][$key] = new Process(
+            $this->repository,
+            $pid,
+            $serviceName,
+            $name,
+            $index,
+            $status
+        );
 
         if (!array_key_exists($name, $this->map['name'])) {
             $this->map['name'][$name] = [];

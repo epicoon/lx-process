@@ -123,7 +123,7 @@ class FileProcessRepository implements ProcessRepositoryInterface
     {
         $file = $this->getMapFile();
         $map = $file->exists() ? $file->get() : [];
-        $this->map = new ProcessMap($map);
+        $this->map = new ProcessMap($this, $map);
     }
 
     /**

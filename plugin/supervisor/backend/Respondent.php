@@ -17,7 +17,7 @@ class Respondent extends \lx\Respondent {
 	public function loadProcessesData()
 	{
 	    $ps = $this->getProcessSupervisor();
-	    $map = $ps->getProcessStatuses();
+	    $map = $ps->getProcessesData();
 		return $map;
 	}
 

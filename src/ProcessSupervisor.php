@@ -2,33 +2,25 @@
 
 namespace lx\process;
 
-use lx\BaseObject;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\ApplicationToolTrait;
 use lx\Math;
+use lx\ObjectTrait;
 use lx\process\interfaces\ProcessRepositoryInterface;
 
 /**
  * Class ProcessSupervisor
  * @package lx
  */
-class ProcessSupervisor extends BaseObject implements FusionComponentInterface
+class ProcessSupervisor implements FusionComponentInterface
 {
+    use ObjectTrait;
     use ApplicationToolTrait;
     use FusionComponentTrait;
 
     /** @var ProcessRepositoryInterface */
     protected ProcessRepositoryInterface $repository;
-
-    /**
-     * ProcessSupervisor constructor.
-     * @param array $config
-     */
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-    }
 
     /**
      * @return array
@@ -49,31 +41,31 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
     }
 
     /**
-     * @param ProcessApplication $process
+     * @param ProcessApplication $processApp
      */
-    public function register($process)
+    public function register($processApp)
     {
         $map = $this->repository->getMap();
-        $maxIndex = $map->getMaxIndexForProcessName($process->getName());
+        $maxIndex = $map->getMaxIndexForProcessName($processApp->getName());
         $newIndex = $maxIndex + 1;
-        $process->setIndex($newIndex);
-        $map->addProcess($process);
+        $processApp->setIndex($newIndex);
+        $map->addProcess($processApp);
         $this->repository->renew();
     }
 
     /**
-     * @param ProcessApplication $process
+     * @param ProcessApplication $processApp
      */
-    public function reborn($process)
+    public function reborn($processApp)
     {
         $map = $this->repository->getMap();
-        $statusData = $map->getStatusData($process->getName(), $process->getIndex());
-        if (!$statusData) {
-            $this->register($process);
+        $process = $map->getProcess($processApp->getName(), $processApp->getIndex());
+        if (!$process) {
+            $this->register($processApp);
             return;
         }
 
-        $statusData->setPid($process->getPid());
+        $process->setPid($processApp->getPid());
         $this->repository->renew();
     }
 
@@ -84,10 +76,9 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
     {
         $currentPids = ProcessHelper::getCurrentPids();
         $map = $this->repository->getMap();
-        $statusesData = $map->getStatusesData();
-        /** @var ProcessStatusData $statusData */
-        foreach ($statusesData as $statusData) {
-            $statusData->actualizeCurrentStatus($currentPids);
+        $processes = $map->getProcesses();
+        foreach ($processes as $process) {
+            $process->actualizeCurrentStatus($currentPids);
         }
 
         if ($renew) {
@@ -98,12 +89,12 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
     /**
      * @param string $processName
      * @param integer $processIndex
-     * @return ProcessStatusData
+     * @return Process
      */
-    public function getProcessStatus($processName, $processIndex)
+    public function getProcess($processName, $processIndex)
     {
         $map = $this->repository->getMap();
-        return $map->getStatusData($processName, $processIndex);
+        return $map->getProcess($processName, $processIndex);
     }
 
     /**
@@ -111,23 +102,22 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
      * @param string $processName
      * @return array
      */
-    public function getProcessStatusesForService($serviceName, $processName = null)
+    public function getServiceProcesses($serviceName, $processName = null)
     {
         $map = $this->repository->getMap();
-        $statusesData = $map->getStatusesData();
+        $processes = $map->getProcesses();
 
         $result = [];
-        /** @var ProcessStatusData $statusData */
-        foreach ($statusesData as $statusData) {
-            if ($statusData->getServiceName() != $serviceName) {
+        foreach ($processes as $process) {
+            if ($process->getServiceName() != $serviceName) {
                 continue;
             }
 
-            if ($processName && $statusData->getName() != $processName) {
+            if ($processName && $process->getName() != $processName) {
                 continue;
             }
 
-            $result[] = $statusData->toHashMap();
+            $result[] = $process->toHashMap();
         }
 
         return $result;
@@ -136,17 +126,16 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
     /**
      * @return array
      */
-    public function getProcessStatuses()
+    public function getProcessesData()
     {
         $this->actualizeProcessStatuses();
 
         $map = $this->repository->getMap();
-        $statusesData = $map->getStatusesData();
+        $processes = $map->getProcesses();
 
         $result = [];
-        /** @var ProcessStatusData $statusData */
-        foreach ($statusesData as $statusData) {
-            $result[] = $statusData->toHashMap();
+        foreach ($processes as $process) {
+            $result[] = $process->toHashMap();
         }
 
         return $result;
@@ -160,26 +149,12 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
      */
     public function deleteProcess($processName, $processIndex, $renew = true)
     {
-        $map = $this->repository->getMap();
-        $statusData = $map->getStatusData($processName, $processIndex);
-        if (!$statusData) {
+        $process = $this->getProcess($processName, $processIndex);
+        if (!$process) {
             return false;
         }
 
-        $statusData->actualizeCurrentStatus();
-        if ($statusData->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE) {
-            $this->stopProcess($processName, $processIndex, false);
-            if ($statusData->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE) {
-                return false;
-            }
-        }
-
-        $map->removeProcess($processName, $processIndex);
-        if ($renew) {
-            $this->repository->renew();
-        }
-
-        return true;
+        return $process->delete($renew);
     }
 
     /**
@@ -190,34 +165,12 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
      */
     public function stopProcess($processName, $processIndex, $renew = true)
     {
-        $map = $this->repository->getMap();
-        $statusData = $map->getStatusData($processName, $processIndex);
-        if (!$statusData) {
+        $process = $this->getProcess($processName, $processIndex);
+        if (!$process) {
             return false;
         }
 
-        $statusData->actualizeCurrentStatus();
-        if ($statusData->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE) {
-            $triesLimit = 10;
-            $triesCounter = 0;
-            $this->sendDirectiveToProcess($processName, $processIndex, ProcessConst::DIRECTIVE_STOP);
-            while ($statusData->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE && $triesCounter < $triesLimit) {
-                sleep(1);
-                $statusData->actualizeCurrentStatus();
-                $triesCounter++;
-            }
-
-            if ($statusData->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE) {
-                return false;
-            }
-        }
-
-        if ($renew) {
-            $statusData->setStatus(ProcessConst::PROCESS_STATUS_CLOSED);
-            $this->repository->renew();
-        }
-
-        return true;
+        return $process->stop($renew);
     }
 
     /**
@@ -228,37 +181,12 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
      */
     public function rerunProcess($processName, $processIndex, $renew = true)
     {
-        $map = $this->repository->getMap();
-        $statusData = $map->getStatusData($processName, $processIndex);
-        if (!$statusData) {
+        $process = $this->getProcess($processName, $processIndex);
+        if (!$process) {
             return false;
         }
 
-        $statusData->actualizeCurrentStatus();
-        if ($statusData->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE) {
-            return false;
-        }
-
-        $service = $this->app->getService($statusData->getServiceName());
-        if (!$service) {
-            return false;
-        }
-
-        $service->runProcess($processName, $processIndex);
-        return true;
-    }
-
-    /**
-     * @param string $processName
-     * @param integer $processIndex
-     * @param integer $code
-     */
-    public function sendDirectiveToProcess($processName, $processIndex, $code)
-    {
-        $this->send($processName, $processIndex, [
-            ProcessConst::MESSAGE_TYPE_SPECIAL,
-            $code
-        ]);
+        return $process->rerun($renew);
     }
 
     /**
@@ -269,41 +197,34 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
      */
     public function sendMessageToProcess($processName, $processIndex, $message)
     {
-        $this->send($processName, $processIndex, [
-            ProcessConst::MESSAGE_TYPE_COMMON,
-            serialize($message),
-        ]);
+        $process = $this->getProcess($processName, $processIndex);
+        if (!$process) {
+            return false;
+        }
 
-        return true;
+        return $process->sendMessage($message);
     }
 
     /**
      * @param string $processName
      * @param integer $processIndex
-     * @param mixed $message
+     * @param mixed $request
      * @return bool
      */
-    public function sendRequestToProcess($processName, $processIndex, $message)
+    public function sendRequestToProcess($processName, $processIndex, $request)
     {
-        $requestCode = Math::randHash();
-
-        $this->send($processName, $processIndex, [
-            ProcessConst::MESSAGE_TYPE_REQUEST,
-            serialize($message),
-            $requestCode
-        ]);
-
-        $triesLimit = 10;
-        $triesCounter = 0;
-        $response = new ProcessResponse();
-        while ($response->isEmpty() && $triesCounter < $triesLimit) {
-            sleep(1);
-            $response = $this->getRepository()->getProcessResponse($processName, $processIndex, $requestCode);
-            $triesCounter++;
+        $process = $this->getProcess($processName, $processIndex);
+        if (!$process) {
+            return false;
         }
 
-        return $response->getData();
+        return $process->sendRequest($request);
     }
+
+
+    /*******************************************************************************************************************
+     * SERVICE PUBLIC
+     ******************************************************************************************************************/
 
     /**
      * @param string $processName
@@ -311,7 +232,7 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
      * @param string $responseCode
      * @param mixed $message
      */
-    public function sendResponseFromProcess($processName, $processIndex, $responseCode, $message)
+    public function sendResponseFromProcessApplication($processName, $processIndex, $responseCode, $message)
     {
         $this->getRepository()->sendResponseFromProcess($processName, $processIndex, $responseCode, $message);
     }
@@ -322,7 +243,7 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
      * @param bool $clear
      * @return array
      */
-    public function getProcessInputMessages($processName, $processIndex, $clear = false)
+    public function readMessagesForProcessApplication($processName, $processIndex, $clear = false)
     {
         $messages = $this->repository->getProcessInputMessages($processName, $processIndex, $clear);
         $result = [];
@@ -341,20 +262,5 @@ class ProcessSupervisor extends BaseObject implements FusionComponentInterface
         }
 
         return $result;
-    }
-
-
-    /*******************************************************************************************************************
-     * PRIVATE
-     ******************************************************************************************************************/
-
-    /**
-     * @param string $processName
-     * @param integer $processIndex
-     * @param array $data
-     */
-    private function send($processName, $processIndex, $data)
-    {
-        $this->repository->sendMessageToProcess($processName, $processIndex, json_encode($data));
     }
 }
