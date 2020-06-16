@@ -98,12 +98,15 @@ function onProcessRun() {
 	Snippet->blocker.show();
 	^Respondent.rerunProcess(proc.name, proc.index).then(res=>{
 		Snippet->blocker.hide();
-		if (!res.success) {
-			lx.Tost.error(res.message || 'Unknown error');
-			return;
-		}
-
 		loadProcessesData();
+	}).catch(res=>{
+		Snippet->blocker.hide();
+		if (res == '')
+			lx.Tost.error('Internal server error');
+		else if (res.isObject && res.success === false)
+			lx.Tost.error(res.error_details[0]);
+		else
+			lx.Tost.error('Unknown error');
 	});
 }
 

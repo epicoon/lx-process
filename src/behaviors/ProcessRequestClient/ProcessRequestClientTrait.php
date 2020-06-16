@@ -14,7 +14,7 @@ trait ProcessRequestClientTrait
     /**
      * @param $action
      * @param array $params
-     * @return bool
+     * @return mixed
      */
     private function callProcessAction($action, $params = [])
     {

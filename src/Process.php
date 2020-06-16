@@ -34,6 +34,7 @@ class Process
 
     /**
      * Process constructor.
+     * @param ProcessRepositoryInterface $repository
      * @param integer $pid
      * @param string $serviceName
      * @param string $name

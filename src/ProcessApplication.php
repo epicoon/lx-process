@@ -57,6 +57,11 @@ class ProcessApplication extends AbstractApplication
         }
 
         parent::__construct($config);
+
+        //TODO путь можно будет брать из $config['logDirectory'] после рефакторинга супервизора, см. Service::runProcess
+        $this->logger->init([
+            'path' => '@site/log/process/' . $this->name . '_' . $this->index,
+        ]);
     }
 
     /**

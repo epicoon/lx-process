@@ -2,12 +2,19 @@
 
 namespace lx\process;
 
+use lx\FusionComponentInterface;
+use lx\FusionComponentTrait;
+use lx\ObjectTrait;
+
 /**
  * Class ProcessRequestController
  * @package lx\process
  */
-class ProcessRequestController
+class ProcessRequestController implements FusionComponentInterface
 {
+    use ObjectTrait;
+    use FusionComponentTrait;
+
     /**
      * @param array $request
      * @return mixed

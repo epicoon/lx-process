@@ -103,10 +103,7 @@ class Respondent extends \lx\Respondent {
         $ps = $this->getProcessSupervisor();
         $result = $ps->rerunProcess($processName, $processIndex);
         if (!$result) {
-            return [
-                'success' => false,
-                'message' => 'Problem with process running',
-            ];
+            return $this->prepareErrorResponse('Problem with process running');
         }
 
         return [
