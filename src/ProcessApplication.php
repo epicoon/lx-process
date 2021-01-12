@@ -27,7 +27,7 @@ class ProcessApplication extends AbstractApplication
     /** @var string */
     private $name;
 
-    /** @var integer */
+    /** @var int */
     private $index;
 
     /** @var bool */
@@ -142,7 +142,7 @@ class ProcessApplication extends AbstractApplication
     }
 
     /**
-     * @param integer $index
+     * @param int $index
      */
     public function setIndex($index)
     {
@@ -150,7 +150,7 @@ class ProcessApplication extends AbstractApplication
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getIndex()
     {

@@ -39,7 +39,7 @@ class FileProcessRepository implements ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $message
      */
     public function sendMessageToProcess($processName, $processIndex, $message)
@@ -50,7 +50,7 @@ class FileProcessRepository implements ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param bool $clear
      * @return array
      */
@@ -81,7 +81,7 @@ class FileProcessRepository implements ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $responseCode
      * @param mixed $message
      */
@@ -94,7 +94,7 @@ class FileProcessRepository implements ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $responseCode
      * @return ProcessResponse
      */
@@ -137,7 +137,7 @@ class FileProcessRepository implements ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @return File
      */
     private function getProcessInputFile($processName, $processIndex)
@@ -148,7 +148,7 @@ class FileProcessRepository implements ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $responseCode
      * @return File
      */

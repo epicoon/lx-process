@@ -51,7 +51,7 @@ class ProcessMap
 
     /**
      * @param string $name
-     * @return integer
+     * @return int
      */
     public function getMaxIndexForProcessName(string $name)
     {
@@ -77,7 +77,7 @@ class ProcessMap
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      */
     public function removeProcess($processName, $processIndex)
     {
@@ -95,7 +95,7 @@ class ProcessMap
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @return Process|null
      */
     public function getProcess($processName, $processIndex) : ?Process
@@ -126,11 +126,11 @@ class ProcessMap
      ******************************************************************************************************************/
 
     /**
-     * @param integer $pid
+     * @param int $pid
      * @param string $serviceName
      * @param string $name
-     * @param integer $index
-     * @param integer $status
+     * @param int $index
+     * @param int $status
      */
     private function addRecord($pid, $serviceName, $name, $index, $status = ProcessConst::PROCESS_STATUS_ACTIVE)
     {

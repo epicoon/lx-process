@@ -52,7 +52,7 @@ class Respondent extends \lx\Respondent {
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @return array
      */
     public function deleteProcess($processName, $processIndex)
@@ -73,7 +73,7 @@ class Respondent extends \lx\Respondent {
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $message
      * @return array
      */
@@ -95,7 +95,7 @@ class Respondent extends \lx\Respondent {
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @return array
      */
     public function rerunProcess($processName, $processIndex)
@@ -113,7 +113,7 @@ class Respondent extends \lx\Respondent {
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @return array
      */
     public function stopProcess($processName, $processIndex)

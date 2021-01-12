@@ -16,14 +16,14 @@ interface ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $message
      */
     public function sendMessageToProcess($processName, $processIndex, $message);
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param bool $clear
      * @return array
      */
@@ -31,7 +31,7 @@ interface ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $responseCode
      * @param mixed $message
      */
@@ -39,7 +39,7 @@ interface ProcessRepositoryInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $requestCode
      * @return ProcessResponse
      */

@@ -88,7 +88,7 @@ class ProcessSupervisor implements FusionComponentInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @return Process
      */
     public function getProcess($processName, $processIndex)
@@ -175,7 +175,7 @@ class ProcessSupervisor implements FusionComponentInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param bool $renew
      * @return bool
      */
@@ -191,7 +191,7 @@ class ProcessSupervisor implements FusionComponentInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param mixed $message
      * @return bool
      */
@@ -207,7 +207,7 @@ class ProcessSupervisor implements FusionComponentInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param mixed $request
      * @return bool
      */
@@ -228,7 +228,7 @@ class ProcessSupervisor implements FusionComponentInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param string $responseCode
      * @param mixed $message
      */
@@ -239,7 +239,7 @@ class ProcessSupervisor implements FusionComponentInterface
 
     /**
      * @param string $processName
-     * @param integer $processIndex
+     * @param int $processIndex
      * @param bool $clear
      * @return array
      */

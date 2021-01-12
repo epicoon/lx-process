@@ -14,7 +14,7 @@ class Process
     /** @var ProcessRepositoryInterface */
     private $repository;
 
-    /** @var integer */
+    /** @var int */
     private $pid;
 
     /** @var string */
@@ -23,23 +23,23 @@ class Process
     /** @var string */
     private $name;
 
-    /** @var integer */
+    /** @var int */
     private $index;
 
-    /** @var integer */
+    /** @var int */
     private $statusInMap;
 
-    /** @var integer */
+    /** @var int */
     private $statusCurrent;
 
     /**
      * Process constructor.
      * @param ProcessRepositoryInterface $repository
-     * @param integer $pid
+     * @param int $pid
      * @param string $serviceName
      * @param string $name
-     * @param integer $index
-     * @param integer $status
+     * @param int $index
+     * @param int $status
      */
     public function __construct(ProcessRepositoryInterface $repository, $pid, $serviceName, $name, $index, $status)
     {
@@ -94,7 +94,7 @@ class Process
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getIndex()
     {
@@ -102,7 +102,7 @@ class Process
     }
 
     /**
-     * @param integer $pid
+     * @param int $pid
      */
     public function setPid($pid)
     {
@@ -271,7 +271,7 @@ class Process
     }
 
     /**
-     * @param integer $code
+     * @param int $code
      */
     private function sendDirective($code)
     {
