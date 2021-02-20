@@ -22,10 +22,7 @@ class ProcessSupervisor implements FusionComponentInterface
     /** @var ProcessRepositoryInterface */
     protected ProcessRepositoryInterface $repository;
 
-    /**
-     * @return array
-     */
-    public static function getConfigProtocol()
+    public static function getConfigProtocol(): array
     {
         return [
             'repository' => ProcessRepositoryInterface::class,
