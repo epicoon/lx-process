@@ -6,7 +6,7 @@ use lx\AbstractApplication;
 use lx\I18nApplicationMap;
 use lx\Language;
 use lx\Router;
-use lx\User;
+use lx\UserInterface;
 use Exception;
 
 /**
@@ -17,7 +17,7 @@ use Exception;
  * @property-read Router $router
  * @property-read Language $language
  * @property-read I18nApplicationMap $i18nMap
- * @property-read User $user
+ * @property-read UserInterface $user
  */
 class ProcessApplication extends AbstractApplication
 {
@@ -74,7 +74,7 @@ class ProcessApplication extends AbstractApplication
             'router' => Router::class,
             'language' => Language::class,
             'i18nMap' => I18nApplicationMap::class,
-            'user' => User::class,
+            'user' => UserInterface::class,
         ]);
     }
 
