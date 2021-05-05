@@ -21,29 +21,14 @@ use Exception;
  */
 class ProcessApplication extends AbstractApplication
 {
-    /** @var string */
-    private $serviceName;
+    private string $serviceName;
+    private string $name;
+    private int $index;
+    private bool $keepAlive;
+    private int $delay;
+    private bool $single;
 
-    /** @var string */
-    private $name;
-
-    /** @var int */
-    private $index;
-
-    /** @var bool */
-    private $keepAlive;
-
-    /** @var int */
-    private $delay;
-
-    /** @var bool */
-    private $single;
-
-    /**
-     * ProcessApplication constructor.
-     * @param array $config
-     */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         $this->serviceName = $config['serviceName'] ?? '';
         $this->name = $config['processName'] ?? '';
@@ -64,10 +49,7 @@ class ProcessApplication extends AbstractApplication
         ]);
     }
 
-    /**
-     * @return array
-     */
-    protected static function getDefaultComponents()
+    protected static function getDefaultComponents(): array
     {
         return array_merge(parent::getDefaultComponents(), [
             'processSupervisor' => ProcessSupervisor::class,
@@ -83,12 +65,12 @@ class ProcessApplication extends AbstractApplication
      * LIFE CYCLE
      ******************************************************************************************************************/
 
-    protected function beforeProcess()
+    protected function beforeProcess(): void
     {
         // pass
     }
 
-    protected function process()
+    protected function process(): void
     {
         // pass
     }
@@ -96,7 +78,7 @@ class ProcessApplication extends AbstractApplication
     /**
      * @param mixed $message
      */
-    protected function processMessage($message)
+    protected function processMessage($message): void
     {
         // pass
     }
@@ -115,7 +97,7 @@ class ProcessApplication extends AbstractApplication
         return $controller->run($request);
     }
 
-    protected function afterProcess()
+    protected function afterProcess(): void
     {
         // pass
     }
@@ -125,39 +107,27 @@ class ProcessApplication extends AbstractApplication
      * PUBLIC
      ******************************************************************************************************************/
 
-    /**
-     * @return string
-     */
-    public function getServiceName()
+    public function getServiceName(): string
     {
         return $this->serviceName;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param int $index
-     */
-    public function setIndex($index)
+    public function setIndex(int $index)
     {
         $this->index = $index;
     }
 
-    /**
-     * @return int
-     */
-    public function getIndex()
+    public function getIndex(): int
     {
         return $this->index;
     }
 
-    public function run()
+    public function run(): void
     {
         $this->beforeProcess();
 
@@ -197,7 +167,7 @@ class ProcessApplication extends AbstractApplication
      * PROTECTED
      ******************************************************************************************************************/
 
-    protected function init()
+    protected function init(): void
     {
         $this->checkSingleConstraint();
         if (isset($this->index)) {
@@ -207,7 +177,10 @@ class ProcessApplication extends AbstractApplication
         }
     }
 
-    private function checkSingleConstraint()
+    /**
+     * @throws Exception
+     */
+    private function checkSingleConstraint(): void
     {
         if (!$this->single) {
             return;
