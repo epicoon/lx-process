@@ -2,16 +2,9 @@
 
 namespace lx\process;
 
-/**
- * Class ProcessHelper
- * @package lx\process
- */
 class ProcessHelper
 {
-    /**
-     * @return array
-     */
-    public static function getCurrentPids()
+    public static function getCurrentPids(): array
     {
         $currentProcesses = \lx::exec('ps -ax');
         $currentProcesses = explode(PHP_EOL, $currentProcesses);

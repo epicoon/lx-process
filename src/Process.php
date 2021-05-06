@@ -5,46 +5,25 @@ namespace lx\process;
 use lx\Math;
 use lx\process\interfaces\ProcessRepositoryInterface;
 
-/**
- * Class Process
- * @package lx\process
- */
 class Process
 {
-    /** @var ProcessRepositoryInterface */
-    private $repository;
+    private ProcessRepositoryInterface $repository;
+    private int $pid;
+    private string $serviceName;
+    private string $name;
+    private int $index;
+    private int $statusInMap;
+    private int $statusCurrent;
 
-    /** @var int */
-    private $pid;
-
-    /** @var string */
-    private $serviceName;
-
-    /** @var string */
-    private $name;
-
-    /** @var int */
-    private $index;
-
-    /** @var int */
-    private $statusInMap;
-
-    /** @var int */
-    private $statusCurrent;
-
-    /**
-     * Process constructor.
-     * @param ProcessRepositoryInterface $repository
-     * @param int $pid
-     * @param string $serviceName
-     * @param string $name
-     * @param int $index
-     * @param int $status
-     */
-    public function __construct(ProcessRepositoryInterface $repository, $pid, $serviceName, $name, $index, $status)
-    {
+    public function __construct(
+        ProcessRepositoryInterface $repository,
+        int $pid,
+        string $serviceName,
+        string $name,
+        int $index,
+        int $status
+    ) {
         $this->repository = $repository;
-
         $this->pid = $pid;
         $this->serviceName = $serviceName;
         $this->name = $name;
@@ -53,66 +32,42 @@ class Process
         $this->statusCurrent = $status;
     }
 
-    /**
-     * @return int
-     */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->statusCurrent;
     }
 
-    /**
-     * @return bool
-     */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->statusCurrent == ProcessConst::PROCESS_STATUS_ACTIVE;
     }
 
-    /**
-     * @param int $status
-     */
-    public function setStatus($status)
+    public function setStatus(int $status): void
     {
         $this->statusCurrent = $status;
     }
 
-    /**
-     * @return string
-     */
-    public function getServiceName()
+    public function getServiceName(): string
     {
         return $this->serviceName;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return int
-     */
-    public function getIndex()
+    public function getIndex(): int
     {
         return $this->index;
     }
 
-    /**
-     * @param int $pid
-     */
-    public function setPid($pid)
+    public function setPid(int $pid): void
     {
         $this->pid = $pid;
     }
 
-    /**
-     * @param array $currentPids
-     */
-    public function actualizeCurrentStatus($currentPids = null)
+    public function actualizeCurrentStatus(?array $currentPids = null): void
     {
         if ($currentPids === null) {
             $currentPids = ProcessHelper::getCurrentPids();
@@ -130,11 +85,7 @@ class Process
         }
     }
 
-    /**
-     * @param bool $renew
-     * @return  bool
-     */
-    public function delete($renew = true)
+    public function delete(bool $renew = true): bool
     {
         $this->actualizeCurrentStatus();
         if ($this->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE) {
@@ -152,11 +103,7 @@ class Process
         return true;
     }
 
-    /**
-     * @param bool $renew
-     * @return  bool
-     */
-    public function stop($renew = true)
+    public function stop(bool $renew = true): bool
     {
         $this->actualizeCurrentStatus();
         if ($this->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE) {
@@ -182,11 +129,7 @@ class Process
         return true;
     }
 
-    /**
-     * @param bool $renew
-     * @return bool
-     */
-    public function rerun($renew = true)
+    public function rerun(bool $renew = true): bool
     {
         $this->actualizeCurrentStatus();
         if ($this->getStatus() == ProcessConst::PROCESS_STATUS_ACTIVE) {
@@ -204,9 +147,8 @@ class Process
 
     /**
      * @param mixed $message
-     * @return bool
      */
-    public function sendMessage($message)
+    public function sendMessage($message): bool
     {
         $this->send([
             ProcessConst::MESSAGE_TYPE_COMMON,
@@ -218,9 +160,8 @@ class Process
 
     /**
      * @param mixed $message
-     * @return bool
      */
-    public function sendRequest($message)
+    public function sendRequest($message): bool
     {
         $requestCode = Math::randHash();
 
@@ -242,10 +183,7 @@ class Process
         return $response->getData();
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             $this->pid,
@@ -256,10 +194,7 @@ class Process
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function toHashMap()
+    public function toHashMap(): array
     {
         return [
             'serviceName' => $this->serviceName,
@@ -270,10 +205,7 @@ class Process
         ];
     }
 
-    /**
-     * @param int $code
-     */
-    private function sendDirective($code)
+    private function sendDirective(int $code): void
     {
         $this->send([
             ProcessConst::MESSAGE_TYPE_SPECIAL,
@@ -281,10 +213,7 @@ class Process
         ]);
     }
 
-    /**
-     * @param array $data
-     */
-    private function send($data)
+    private function send(array $data): void
     {
         $this->repository->sendMessageToProcess(
             $this->getName(),

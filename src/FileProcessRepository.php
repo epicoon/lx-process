@@ -6,19 +6,11 @@ use lx\File;
 use lx\DataFile;
 use lx\process\interfaces\ProcessRepositoryInterface;
 
-/**
- * Class FileProcessRepository
- * @package lx
- */
 class FileProcessRepository implements ProcessRepositoryInterface
 {
-    /** @var ProcessMap */
     private ProcessMap $map;
 
-    /**
-     * @return ProcessMap
-     */
-    public function getMap() : ProcessMap
+    public function getMap(): ProcessMap
     {
         if (!isset($this->map)) {
             $this->loadMap();
@@ -27,7 +19,7 @@ class FileProcessRepository implements ProcessRepositoryInterface
         return $this->map;
     }
 
-    public function renew()
+    public function renew(): void
     {
         $file = $this->getMapFile();
         if (!$file->exists()) {
@@ -37,24 +29,13 @@ class FileProcessRepository implements ProcessRepositoryInterface
         $file->put($this->map->toArray());
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $message
-     */
-    public function sendMessageToProcess($processName, $processIndex, $message)
+    public function sendMessageToProcess(string $processName, int $processIndex, string $message): void
     {
         $file = $this->getProcessInputFile($processName, $processIndex);
         $file->put('<lx-process-message-begin>' . $message . '<lx-process-message-end>', FILE_APPEND);
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param bool $clear
-     * @return array
-     */
-    public function getProcessInputMessages($processName, $processIndex, $clear = false)
+    public function getProcessInputMessages(string $processName, int $processIndex, bool $clear = false): array
     {
         $file = $this->getProcessInputFile($processName, $processIndex);
         if (!$file->exists()) {
@@ -80,25 +61,21 @@ class FileProcessRepository implements ProcessRepositoryInterface
     }
 
     /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $responseCode
      * @param mixed $message
      */
-    public function sendResponseFromProcess($processName, $processIndex, $responseCode, $message)
+    public function sendResponseFromProcess(
+        string $processName,
+        int $processIndex,
+        string $responseCode,
+        $message
+    ): void
     {
         $messageString = serialize($message);
         $file = $this->getProcessResponseFile($processName, $processIndex, $responseCode);
         $file->put($messageString);
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $responseCode
-     * @return ProcessResponse
-     */
-    public function getProcessResponse($processName, $processIndex, $responseCode)
+    public function getProcessResponse(string $processName, int $processIndex, string $responseCode): ProcessResponse
     {
         $response = new ProcessResponse();
         $file = $this->getProcessResponseFile($processName, $processIndex, $responseCode);
@@ -115,44 +92,30 @@ class FileProcessRepository implements ProcessRepositoryInterface
     }
 
 
-    /*******************************************************************************************************************
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * PRIVATE
-     ******************************************************************************************************************/
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    private function loadMap()
+    private function loadMap(): void
     {
         $file = $this->getMapFile();
         $map = $file->exists() ? $file->get() : [];
         $this->map = new ProcessMap($this, $map);
     }
 
-    /**
-     * @return DataFile
-     */
-    private function getMapFile()
+    private function getMapFile(): DataFile
     {
         $path = \lx::$conductor->getSystemPath('process');
         return new DataFile($path . '/map.json');
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @return File
-     */
-    private function getProcessInputFile($processName, $processIndex)
+    private function getProcessInputFile(string $processName, int $processIndex): File
     {
         $path = \lx::$conductor->getSystemPath('process');
         return new File($path . '/input_' . $processName . '_' . $processIndex);
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $responseCode
-     * @return File
-     */
-    private function getProcessResponseFile($processName, $processIndex, $responseCode)
+    private function getProcessResponseFile(string $processName, int $processIndex, string $responseCode): File
     {
         $path = \lx::$conductor->getSystemPath('process');
         return new File($path . '/response_' . $processName . '_' . $processIndex . '_' . $responseCode);

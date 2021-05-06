@@ -6,20 +6,15 @@ use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\ObjectTrait;
 
-/**
- * Class ProcessRequestController
- * @package lx\process
- */
 class ProcessRequestController implements FusionComponentInterface
 {
     use ObjectTrait;
     use FusionComponentTrait;
 
     /**
-     * @param array $request
      * @return mixed
      */
-    public function run($request)
+    public function run(array $request)
     {
         $action = $request['action'] ?? null;
         if (!$action) {
@@ -34,11 +29,7 @@ class ProcessRequestController implements FusionComponentInterface
         return call_user_func_array([$this, $method], $request['params'] ?? []);
     }
 
-    /**
-     * @param string $actionName
-     * @return string|null
-     */
-    protected function getMethodName($actionName)
+    protected function getMethodName(string $actionName): ?string
     {
         if ($actionName == 'run' || $actionName == 'getMethodName') {
             return null;

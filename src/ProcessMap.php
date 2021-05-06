@@ -4,23 +4,11 @@ namespace lx\process;
 
 use lx\process\interfaces\ProcessRepositoryInterface;
 
-/**
- * Class ProcessMap
- * @package lx\process
- */
 class ProcessMap
 {
-    /** @var ProcessRepositoryInterface */
-    private $repository;
-
-    /** @var array */
+    private ProcessRepositoryInterface $repository;
     private array $map;
 
-    /**
-     * ProcessMap constructor.
-     * @param ProcessRepositoryInterface $repository
-     * @param array $map
-     */
     public function __construct(ProcessRepositoryInterface $repository, array $map)
     {
         $this->repository = $repository;
@@ -35,10 +23,7 @@ class ProcessMap
         }
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         $result = [];
         /** @var Process $process */
@@ -49,11 +34,7 @@ class ProcessMap
         return $result;
     }
 
-    /**
-     * @param string $name
-     * @return int
-     */
-    public function getMaxIndexForProcessName(string $name)
+    public function getMaxIndexForProcessName(string $name): int
     {
         if (!array_key_exists($name, $this->map['name'])) {
             return 0;
@@ -62,10 +43,7 @@ class ProcessMap
         return max(array_keys($this->map['name'][$name]));
     }
 
-    /**
-     * @param ProcessApplication $process
-     */
-    public function addProcess(ProcessApplication $process)
+    public function addProcess(ProcessApplication $process): void
     {
         $this->addRecord(
             $process->getPid(),
@@ -75,15 +53,11 @@ class ProcessMap
         );
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     */
-    public function removeProcess($processName, $processIndex)
+    public function removeProcess(string $processName, int $processIndex): void
     {
         $key = $this->map['name'][$processName][$processIndex] ?? null;
         if (!$key) {
-            return null;
+            return;
         }
 
         unset($this->map['key'][$key]);
@@ -93,12 +67,7 @@ class ProcessMap
         }
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @return Process|null
-     */
-    public function getProcess($processName, $processIndex) : ?Process
+    public function getProcess(string $processName, int $processIndex) : ?Process
     {
         $key = $this->map['name'][$processName][$processIndex] ?? null;
         if (!$key) {
@@ -113,7 +82,7 @@ class ProcessMap
     }
 
     /**
-     * @return Process[]
+     * @return array<Process>
      */
     public function getProcesses() : array
     {
@@ -121,18 +90,17 @@ class ProcessMap
     }
 
 
-    /*******************************************************************************************************************
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
      * PRIVATE
-     ******************************************************************************************************************/
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /**
-     * @param int $pid
-     * @param string $serviceName
-     * @param string $name
-     * @param int $index
-     * @param int $status
-     */
-    private function addRecord($pid, $serviceName, $name, $index, $status = ProcessConst::PROCESS_STATUS_ACTIVE)
+    private function addRecord(
+        int $pid,
+        string $serviceName,
+        string $name,
+        int $index,
+        int $status = ProcessConst::PROCESS_STATUS_ACTIVE
+    ): void
     {
         $key = $name . '_' . $index;
         $this->map['key'][$key] = new Process(

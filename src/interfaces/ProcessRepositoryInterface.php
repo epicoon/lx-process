@@ -7,41 +7,19 @@ use lx\process\ProcessResponse;
 
 interface ProcessRepositoryInterface
 {
-    /**
-     * @return ProcessMap
-     */
-    public function getMap() : ProcessMap;
+    public function getMap(): ProcessMap;
+    public function renew(): void;
 
-    public function renew();
-
+    public function sendMessageToProcess(string $processName, int $processIndex, string $message): void;
+    public function getProcessInputMessages(string $processName, int $processIndex, bool $clear = false): array;
     /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $message
-     */
-    public function sendMessageToProcess($processName, $processIndex, $message);
-
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param bool $clear
-     * @return array
-     */
-    public function getProcessInputMessages($processName, $processIndex, $clear = false);
-
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $responseCode
      * @param mixed $message
      */
-    public function sendResponseFromProcess($processName, $processIndex, $responseCode, $message);
-
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $requestCode
-     * @return ProcessResponse
-     */
-    public function getProcessResponse($processName, $processIndex, $requestCode);
+    public function sendResponseFromProcess(
+        string $processName,
+        int $processIndex,
+        string $responseCode,
+        $message
+    ): void;
+    public function getProcessResponse(string $processName, int $processIndex, string $requestCode): ProcessResponse;
 }

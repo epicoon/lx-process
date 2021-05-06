@@ -2,19 +2,12 @@
 
 namespace lx\process;
 
-/**
- * Class ProcessResponse
- * @package lx\process
- */
 class ProcessResponse
 {
     /** @var mixed */
     private $data = null;
 
-    /**
-     * @return bool
-     */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return !isset($this->data);
     }

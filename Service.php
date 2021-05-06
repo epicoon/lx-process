@@ -2,6 +2,7 @@
 
 namespace lx\process;
 
-class Service extends \lx\Service {
+class Service extends \lx\Service
+{
 
 }

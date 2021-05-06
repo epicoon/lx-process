@@ -5,18 +5,12 @@ namespace lx\process\behaviors\ProcessRequestClient;
 use lx\process\Process;
 use lx\process\ProcessSupervisor;
 
-/**
- * Trait ProcessRequestClientTrait
- * @package lx\process\behaviors\ProcessRequestClient
- */
 trait ProcessRequestClientTrait
 {
     /**
-     * @param $action
-     * @param array $params
      * @return mixed
      */
-    private function callProcessAction($action, $params = [])
+    private function callProcessAction(string $action, array $params = [])
     {
         $process = $this->getActiveProcess();
         if (!$process) {
@@ -29,9 +23,6 @@ trait ProcessRequestClientTrait
 
     }
 
-    /**
-     * @return Process|null
-     */
     private function getActiveProcess() : ?Process
     {
         $process = $this->getProcess();

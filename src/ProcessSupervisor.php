@@ -9,17 +9,12 @@ use lx\Math;
 use lx\ObjectTrait;
 use lx\process\interfaces\ProcessRepositoryInterface;
 
-/**
- * Class ProcessSupervisor
- * @package lx
- */
 class ProcessSupervisor implements FusionComponentInterface
 {
     use ObjectTrait;
     use ApplicationToolTrait;
     use FusionComponentTrait;
 
-    /** @var ProcessRepositoryInterface */
     protected ProcessRepositoryInterface $repository;
 
     public static function getConfigProtocol(): array
@@ -29,18 +24,12 @@ class ProcessSupervisor implements FusionComponentInterface
         ];
     }
 
-    /**
-     * @return ProcessRepositoryInterface
-     */
-    public function getRepository()
+    public function getRepository(): ProcessRepositoryInterface
     {
         return $this->repository;
     }
 
-    /**
-     * @param ProcessApplication $processApp
-     */
-    public function register($processApp)
+    public function register(ProcessApplication $processApp): void
     {
         $map = $this->repository->getMap();
         $maxIndex = $map->getMaxIndexForProcessName($processApp->getName());
@@ -50,10 +39,7 @@ class ProcessSupervisor implements FusionComponentInterface
         $this->repository->renew();
     }
 
-    /**
-     * @param ProcessApplication $processApp
-     */
-    public function reborn($processApp)
+    public function reborn(ProcessApplication $processApp): void
     {
         $map = $this->repository->getMap();
         $process = $map->getProcess($processApp->getName(), $processApp->getIndex());
@@ -66,10 +52,7 @@ class ProcessSupervisor implements FusionComponentInterface
         $this->repository->renew();
     }
 
-    /**
-     * @param bool $renew
-     */
-    public function actualizeProcessStatuses($renew = true)
+    public function actualizeProcessStatuses(bool $renew = true): void
     {
         $currentPids = ProcessHelper::getCurrentPids();
         $map = $this->repository->getMap();
@@ -83,23 +66,13 @@ class ProcessSupervisor implements FusionComponentInterface
         }
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @return Process
-     */
-    public function getProcess($processName, $processIndex)
+    public function getProcess(string $processName, int $processIndex): Process
     {
         $map = $this->repository->getMap();
         return $map->getProcess($processName, $processIndex);
     }
 
-    /**
-     * @param string $serviceName
-     * @param string $processName
-     * @return array
-     */
-    public function getServiceProcesses($serviceName, $processName = null)
+    public function getServiceProcesses(string $serviceName, ?string $processName = null): array
     {
         $map = $this->repository->getMap();
         $processes = $map->getProcesses();
@@ -120,10 +93,7 @@ class ProcessSupervisor implements FusionComponentInterface
         return $result;
     }
 
-    /**
-     * @return array
-     */
-    public function getProcessesData()
+    public function getProcessesData(): array
     {
         $this->actualizeProcessStatuses();
 
@@ -138,13 +108,7 @@ class ProcessSupervisor implements FusionComponentInterface
         return $result;
     }
 
-    /**
-     * @param string $processName
-     * @param string $processIndex
-     * @param bool $renew
-     * @return  bool
-     */
-    public function deleteProcess($processName, $processIndex, $renew = true)
+    public function deleteProcess(string $processName, string $processIndex, bool $renew = true): bool
     {
         $process = $this->getProcess($processName, $processIndex);
         if (!$process) {
@@ -154,13 +118,7 @@ class ProcessSupervisor implements FusionComponentInterface
         return $process->delete($renew);
     }
 
-    /**
-     * @param string $processName
-     * @param string $processIndex
-     * @param bool $renew
-     * @return  bool
-     */
-    public function stopProcess($processName, $processIndex, $renew = true)
+    public function stopProcess(string $processName, string $processIndex, bool $renew = true): bool
     {
         $process = $this->getProcess($processName, $processIndex);
         if (!$process) {
@@ -170,13 +128,7 @@ class ProcessSupervisor implements FusionComponentInterface
         return $process->stop($renew);
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param bool $renew
-     * @return bool
-     */
-    public function rerunProcess($processName, $processIndex, $renew = true)
+    public function rerunProcess(string $processName, int $processIndex, bool $renew = true): bool
     {
         $process = $this->getProcess($processName, $processIndex);
         if (!$process) {
@@ -187,12 +139,9 @@ class ProcessSupervisor implements FusionComponentInterface
     }
 
     /**
-     * @param string $processName
-     * @param int $processIndex
      * @param mixed $message
-     * @return bool
      */
-    public function sendMessageToProcess($processName, $processIndex, $message)
+    public function sendMessageToProcess(string $processName, int $processIndex, $message): bool
     {
         $process = $this->getProcess($processName, $processIndex);
         if (!$process) {
@@ -203,12 +152,9 @@ class ProcessSupervisor implements FusionComponentInterface
     }
 
     /**
-     * @param string $processName
-     * @param int $processIndex
      * @param mixed $request
-     * @return bool
      */
-    public function sendRequestToProcess($processName, $processIndex, $request)
+    public function sendRequestToProcess(string $processName, int $processIndex, $request): bool
     {
         $process = $this->getProcess($processName, $processIndex);
         if (!$process) {
@@ -219,28 +165,28 @@ class ProcessSupervisor implements FusionComponentInterface
     }
 
 
-    /*******************************************************************************************************************
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
      * SERVICE PUBLIC
-     ******************************************************************************************************************/
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $responseCode
      * @param mixed $message
      */
-    public function sendResponseFromProcessApplication($processName, $processIndex, $responseCode, $message)
+    public function sendResponseFromProcessApplication(
+        string $processName,
+        int $processIndex,
+        string $responseCode,
+        $message
+    ): void
     {
         $this->getRepository()->sendResponseFromProcess($processName, $processIndex, $responseCode, $message);
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param bool $clear
-     * @return array
-     */
-    public function readMessagesForProcessApplication($processName, $processIndex, $clear = false)
+    public function readMessagesForProcessApplication(
+        string $processName,
+        int $processIndex,
+        bool $clear = false
+    ): array
     {
         $messages = $this->repository->getProcessInputMessages($processName, $processIndex, $clear);
         $result = [];

@@ -4,29 +4,17 @@ namespace lx\process\plugin\supervisor\backend;
 
 use lx\process\ProcessSupervisor;
 
-/**
- * Class Respondent
- * @package lx\process\plugin\supervisor\backend
- */
 class Respondent extends \lx\Respondent {
     private $processSupervisor;
 
-    /**
-     * @return array
-     */
-	public function loadProcessesData()
+	public function loadProcessesData(): array
 	{
 	    $ps = $this->getProcessSupervisor();
 	    $map = $ps->getProcessesData();
 		return $map;
 	}
 
-    /**
-     * @param string $serviceName
-     * @param string $processName
-     * @return array
-     */
-	public function addProcess($serviceName, $processName)
+	public function addProcess(string $serviceName, string $processName): array
     {
         $service = $this->app->getService($serviceName);
         if (!$service) {
@@ -50,12 +38,7 @@ class Respondent extends \lx\Respondent {
         ];
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @return array
-     */
-    public function deleteProcess($processName, $processIndex)
+    public function deleteProcess(string $processName, int $processIndex): array
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->deleteProcess($processName, $processIndex);
@@ -71,13 +54,7 @@ class Respondent extends \lx\Respondent {
         ];
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @param string $message
-     * @return array
-     */
-    public function sendMessage($processName, $processIndex, $message)
+    public function sendMessage(string $processName, int $processIndex, string $message): array
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->sendMessageToProcess($processName, $processIndex, $message);
@@ -93,12 +70,7 @@ class Respondent extends \lx\Respondent {
         ];
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @return array
-     */
-    public function rerunProcess($processName, $processIndex)
+    public function rerunProcess(string $processName, int $processIndex): array
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->rerunProcess($processName, $processIndex);
@@ -111,12 +83,7 @@ class Respondent extends \lx\Respondent {
         ];
     }
 
-    /**
-     * @param string $processName
-     * @param int $processIndex
-     * @return array
-     */
-    public function stopProcess($processName, $processIndex)
+    public function stopProcess(string $processName, int $processIndex): array
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->stopProcess($processName, $processIndex);
@@ -133,14 +100,11 @@ class Respondent extends \lx\Respondent {
     }
 
 
-    /*******************************************************************************************************************
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * PRIVATE
-     ******************************************************************************************************************/
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /**
-     * @return ProcessSupervisor|mixed
-     */
-	private function getProcessSupervisor()
+	private function getProcessSupervisor(): ?ProcessSupervisor
     {
         if (!isset($this->processSupervisor)) {
             $this->processSupervisor = $this->app->processSupervisor ?? new ProcessSupervisor();

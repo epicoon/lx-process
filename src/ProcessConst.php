@@ -2,10 +2,6 @@
 
 namespace lx\process;
 
-/**
- * Class ProcessConst
- * @package lx\process
- */
 class ProcessConst
 {
     const PROCESS_STATUS_ACTIVE = 1;
