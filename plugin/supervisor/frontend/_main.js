@@ -98,13 +98,15 @@ function onProcessRun() {
 	Snippet->blocker.show();
 	^Respondent.rerunProcess(proc.name, proc.index).then(res=>{
 		Snippet->blocker.hide();
+		if (!res.success) {
+			lx.Tost.error(res.data || 'Unknown error');
+			return;
+		}
 		loadProcessesData();
 	}).catch(res=>{
 		Snippet->blocker.hide();
 		if (res == '')
 			lx.Tost.error('Internal server error');
-		else if (res.isObject && res.success === false)
-			lx.Tost.error(res.error_details[0]);
 		else
 			lx.Tost.error('Unknown error');
 	});
@@ -117,7 +119,7 @@ function onProcessStop() {
 	^Respondent.stopProcess(proc.name, proc.index).then(res=>{
 		Snippet->blocker.hide();
 		if (!res.success) {
-			lx.Tost.error(res.message || 'Unknown error');
+			lx.Tost.error(res.data || 'Unknown error');
 			return;
 		}
 
@@ -132,7 +134,7 @@ function onProcessClose() {
 	^Respondent.deleteProcess(proc.name, proc.index).then(res=>{
 		Snippet->blocker.hide();
 		if (!res.success) {
-			lx.Tost.error(res.message || 'Unknown error');
+			lx.Tost.error(res.data || 'Unknown error');
 			return;
 		}
 
@@ -164,7 +166,7 @@ Snippet->>butSendMessage.click(()=>{
 	^Respondent.sendMessage(proc.name, proc.index, message).then(res=>{
 		Snippet->blocker.hide();
 		if (!res.success) {
-			lx.Tost.error(res.message || 'Unknown error');
+			lx.Tost.error(res.data || 'Unknown error');
 			return;
 		}
 
@@ -190,7 +192,7 @@ Snippet->>butAddProcess.click(()=>{
 		^Respondent.addProcess(serviceName, processName).then(res=>{
 			Snippet->blocker.hide();
 			if (!res.success) {
-				lx.Tost.error(res.message || 'Unknown error');
+				lx.Tost.error(res.data || 'Unknown error');
 				return;
 			}
 
@@ -202,7 +204,7 @@ Snippet->>butAddProcess.click(()=>{
 
 
 function loadProcessesData() {
-	^Respondent.loadProcessesData().then(res=>processesList.reset(res));
+	^Respondent.loadProcessesData().then(res=>processesList.reset(res.data));
 }
 
 

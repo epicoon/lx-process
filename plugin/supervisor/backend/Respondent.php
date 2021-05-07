@@ -3,100 +3,76 @@
 namespace lx\process\plugin\supervisor\backend;
 
 use lx\process\ProcessSupervisor;
+use lx\ResponseInterface;
 
-class Respondent extends \lx\Respondent {
+class Respondent extends \lx\Respondent
+{
     private $processSupervisor;
 
-	public function loadProcessesData(): array
+	public function loadProcessesData(): ResponseInterface
 	{
 	    $ps = $this->getProcessSupervisor();
 	    $map = $ps->getProcessesData();
-		return $map;
+		return $this->prepareResponse($map);
 	}
 
-	public function addProcess(string $serviceName, string $processName): array
+	public function addProcess(string $serviceName, string $processName): ResponseInterface
     {
         $service = $this->app->getService($serviceName);
         if (!$service) {
-            return [
-                'success' => false,
-                'message' => 'Service doesn\'t exist'
-            ];
+            return $this->prepareWarningResponse('Service doesn\'t exist');
         }
 
         if (!$service->hasProcess($processName)) {
-            return [
-                'success' => false,
-                'message' => 'Service doesn\'t have this process'
-            ];
+            return $this->prepareWarningResponse('Service doesn\'t have this process');
         }
 
         $service->runProcess($processName);
-
-        return [
-            'success' => true,
-        ];
+        return $this->prepareResponse('Ok');
     }
 
-    public function deleteProcess(string $processName, int $processIndex): array
+    public function deleteProcess(string $processName, int $processIndex): ResponseInterface
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->deleteProcess($processName, $processIndex);
         if (!$result) {
-            return [
-                'success' => false,
-                'message' => 'Problem while process stopping',
-            ];
+            return $this->prepareWarningResponse('Problem while process stopping');
         }
 
-        return [
-            'success' => true,
-        ];
+        return $this->prepareResponse('Ok');
     }
 
-    public function sendMessage(string $processName, int $processIndex, string $message): array
+    public function sendMessage(string $processName, int $processIndex, string $message): ResponseInterface
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->sendMessageToProcess($processName, $processIndex, $message);
         if (!$result) {
-            return [
-                'success' => false,
-                'message' => 'Problem with message sending',
-            ];
+            return $this->prepareWarningResponse('Problem with message sending');
         }
 
-        return [
-            'success' => true,
-        ];
+        return $this->prepareResponse('Ok');
     }
 
-    public function rerunProcess(string $processName, int $processIndex): array
+    public function rerunProcess(string $processName, int $processIndex): ResponseInterface
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->rerunProcess($processName, $processIndex);
         if (!$result) {
-            return $this->prepareErrorResponse('Problem with process running');
+            return $this->prepareWarningResponse('Problem with process running');
         }
 
-        return [
-            'success' => true,
-        ];
+        return $this->prepareResponse('Ok');
     }
 
-    public function stopProcess(string $processName, int $processIndex): array
+    public function stopProcess(string $processName, int $processIndex): ResponseInterface
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->stopProcess($processName, $processIndex);
         if (!$result) {
-            return [
-                'success' => false,
-                'message' => 'Problem with process running',
-            ];
+            return $this->prepareWarningResponse('Problem with process running');
         }
 
-        return [
-            'success' => true,
-        ];
+        return $this->prepareResponse('Ok');
     }
 
 
