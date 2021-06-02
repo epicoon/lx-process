@@ -3,7 +3,7 @@
 namespace lx\process;
 
 use lx\AbstractApplication;
-use lx\I18nApplicationMap;
+use lx\ApplicationI18nMap;
 use lx\Language;
 use lx\Router;
 use lx\UserInterface;
@@ -16,7 +16,7 @@ use Exception;
  * @property-read ProcessSupervisor $processSupervisor
  * @property-read Router $router
  * @property-read Language $language
- * @property-read I18nApplicationMap $i18nMap
+ * @property-read ApplicationI18nMap $i18nMap
  * @property-read UserInterface $user
  */
 class ProcessApplication extends AbstractApplication
@@ -55,7 +55,7 @@ class ProcessApplication extends AbstractApplication
             'processSupervisor' => ProcessSupervisor::class,
             'router' => Router::class,
             'language' => Language::class,
-            'i18nMap' => I18nApplicationMap::class,
+            'i18nMap' => ApplicationI18nMap::class,
             'user' => UserInterface::class,
         ]);
     }
