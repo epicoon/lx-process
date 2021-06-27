@@ -8,7 +8,6 @@ use lx\ObjectTrait;
 
 class ProcessRequestController implements FusionComponentInterface
 {
-    use ObjectTrait;
     use FusionComponentTrait;
 
     /**

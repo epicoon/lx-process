@@ -11,7 +11,6 @@ use lx\process\interfaces\ProcessRepositoryInterface;
 
 class ProcessSupervisor implements FusionComponentInterface
 {
-    use ObjectTrait;
     use ApplicationToolTrait;
     use FusionComponentTrait;
 
