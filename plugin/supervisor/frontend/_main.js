@@ -68,7 +68,7 @@ Snippet->>listStream.matrix({
 			}
 		});
 
-		form.getChildren().call('align', [lx.CENTER, lx.MIDDLE]);
+		form.getChildren().each(c=>c.align(lx.CENTER, lx.MIDDLE));
 
 		var butSend  = new lx.Box({ width: '40px', css: 'lx-process-send',  click: onProcessSend  });
 		var butRun   = new lx.Box({ width: '40px', css: 'lx-process-run',   click: onProcessRun   });
