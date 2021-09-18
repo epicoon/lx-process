@@ -176,7 +176,7 @@ Snippet->>butSendMessage.click(()=>{
 
 
 Snippet->>butAddProcess.click(()=>{
-	Plugin->inputPopup.open(['Service name', 'Process name'], (values)=>{
+	Plugin.root->inputPopup.open(['Service name', 'Process name']).confirm((values)=>{
 		var serviceName = values[0],
 			processName = values[1];
 		if (serviceName == '') {
