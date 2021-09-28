@@ -31,6 +31,11 @@ class Process
         $this->statusInMap = $status;
         $this->statusCurrent = $status;
     }
+    
+    public function getPid(): int
+    {
+        return $this->pid;
+    }
 
     public function getStatus(): int
     {

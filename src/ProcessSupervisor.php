@@ -65,7 +65,7 @@ class ProcessSupervisor implements FusionComponentInterface
         }
     }
 
-    public function getProcess(string $processName, int $processIndex): Process
+    public function getProcess(string $processName, int $processIndex): ?Process
     {
         $map = $this->repository->getMap();
         return $map->getProcess($processName, $processIndex);
