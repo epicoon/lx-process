@@ -4,20 +4,16 @@ namespace lx\process;
 
 use lx\AbstractApplication;
 use lx\ApplicationI18nMap;
+use lx\AuthenticationInterface;
+use lx\AuthorizationInterface;
 use lx\Language;
 use lx\Router;
 use lx\UserInterface;
 use Exception;
+use lx\UserManagerInterface;
 
 /**
- * Class ProcessApplication
- * @package lx
- *
  * @property-read ProcessSupervisor $processSupervisor
- * @property-read Router $router
- * @property-read Language $language
- * @property-read ApplicationI18nMap $i18nMap
- * @property-read UserInterface $user
  */
 class ProcessApplication extends AbstractApplication
 {
@@ -49,11 +45,10 @@ class ProcessApplication extends AbstractApplication
         ]);
     }
 
-    protected static function getDefaultComponents(): array
+    public function getDefaultFusionComponents(): array
     {
-        return array_merge(parent::getDefaultComponents(), [
+        return array_merge(parent::getDefaultFusionComponents(), [
             'processSupervisor' => ProcessSupervisor::class,
-            'router' => Router::class,
             'language' => Language::class,
             'i18nMap' => ApplicationI18nMap::class,
             'user' => UserInterface::class,

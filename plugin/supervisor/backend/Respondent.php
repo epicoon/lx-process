@@ -2,6 +2,7 @@
 
 namespace lx\process\plugin\supervisor\backend;
 
+use lx;
 use lx\process\ProcessSupervisor;
 use lx\ResponseInterface;
 
@@ -18,7 +19,7 @@ class Respondent extends \lx\Respondent
 
 	public function addProcess(string $serviceName, string $processName): ResponseInterface
     {
-        $service = $this->app->getService($serviceName);
+        $service = lx::$app->getService($serviceName);
         if (!$service) {
             return $this->prepareWarningResponse('Service doesn\'t exist');
         }
@@ -83,7 +84,7 @@ class Respondent extends \lx\Respondent
 	private function getProcessSupervisor(): ?ProcessSupervisor
     {
         if (!isset($this->processSupervisor)) {
-            $this->processSupervisor = $this->app->processSupervisor ?? new ProcessSupervisor();
+            $this->processSupervisor = lx::$app->processSupervisor ?? new ProcessSupervisor();
         }
 
         return $this->processSupervisor;

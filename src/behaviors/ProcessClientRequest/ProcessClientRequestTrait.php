@@ -1,11 +1,11 @@
 <?php
 
-namespace lx\process\behaviors\ProcessRequestClient;
+namespace lx\process\behaviors\ProcessClientRequest;
 
 use lx\process\Process;
 use lx\process\ProcessSupervisor;
 
-trait ProcessRequestClientTrait
+trait ProcessClientRequestTrait
 {
     /**
      * @return mixed

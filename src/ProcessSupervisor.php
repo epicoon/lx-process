@@ -4,19 +4,17 @@ namespace lx\process;
 
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
-use lx\ApplicationToolTrait;
 use lx\Math;
 use lx\ObjectTrait;
 use lx\process\interfaces\ProcessRepositoryInterface;
 
 class ProcessSupervisor implements FusionComponentInterface
 {
-    use ApplicationToolTrait;
     use FusionComponentTrait;
 
     protected ProcessRepositoryInterface $repository;
 
-    public static function getConfigProtocol(): array
+    public static function getDependenciesConfig(): array
     {
         return [
             'repository' => ProcessRepositoryInterface::class,
