@@ -49,6 +49,7 @@ class ProcessApplication extends AbstractApplication
     {
         return array_merge(parent::getDefaultFusionComponents(), [
             'processSupervisor' => ProcessSupervisor::class,
+            'router' => Router::class,
             'language' => Language::class,
             'i18nMap' => ApplicationI18nMap::class,
             'user' => UserInterface::class,
