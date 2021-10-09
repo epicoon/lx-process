@@ -5,7 +5,6 @@ namespace lx\process;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\Math;
-use lx\ObjectTrait;
 use lx\process\interfaces\ProcessRepositoryInterface;
 
 class ProcessSupervisor implements FusionComponentInterface

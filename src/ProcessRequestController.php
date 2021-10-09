@@ -4,7 +4,6 @@ namespace lx\process;
 
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
-use lx\ObjectTrait;
 
 class ProcessRequestController implements FusionComponentInterface
 {
