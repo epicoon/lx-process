@@ -24,7 +24,7 @@ class ProcessApplication extends AbstractApplication
     private int $delay;
     private bool $single;
 
-    public function __construct(array $config = [])
+    public function __construct(iterable $config = [])
     {
         $this->serviceName = $config['serviceName'] ?? '';
         $this->name = $config['processName'] ?? '';
