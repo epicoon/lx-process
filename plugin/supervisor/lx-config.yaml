@@ -4,7 +4,6 @@ rootSnippet: snippets/_root.js
 snippets: snippets
 
 jsMain: frontend/_main.js
-jsBootstrap: frontend/_bootstrap.js
 
 images: assets/images
 css: assets/css
