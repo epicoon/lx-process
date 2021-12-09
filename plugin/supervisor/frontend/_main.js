@@ -5,13 +5,15 @@
 
 #lx:use lx.Form;
 
-#lx:model-collection processesList = {
-	serviceName,
-	name,
-	index,
-	pid,
-	status
-};
+const processesList = lx.ModelCollection.create({
+	schema: [
+		'serviceName',
+		'name',
+		'index',
+		'pid',
+		'status'
+	]
+});
 
 class ProcessStatuses {
 	#lx:const
