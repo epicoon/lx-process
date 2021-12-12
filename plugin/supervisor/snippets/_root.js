@@ -21,7 +21,8 @@ var messageBox = new lx.ActiveBox({
 messageBox.setSnippet('messageBox');
 messageBox.hide();
 
-Snippet.addSnippet({plugin:'lx/tools:snippets', snippet:'inputPopup'});
+#lx:use lx.InputPopup;
+new lx.InputPopup();
 
 var blocker = new lx.Box({
 	key: 'blocker',
