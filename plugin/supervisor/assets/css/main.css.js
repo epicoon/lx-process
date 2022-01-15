@@ -1,7 +1,7 @@
 #lx:use lx.CssColorSchema;
 #lx:use lx.MainCssContext;
 
-const cssContext = lx.MainCssContext.cssContext;
+const cssContext = lx.MainCssContext.instance;
 
 cssContext.addClass('lx-process-slot', {
 	overflow: 'hidden',
