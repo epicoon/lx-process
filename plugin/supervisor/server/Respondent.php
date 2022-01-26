@@ -1,6 +1,6 @@
 <?php
 
-namespace lx\process\plugin\supervisor\backend;
+namespace lx\process\plugin\supervisor\server;
 
 use lx;
 use lx\process\ProcessSupervisor;
