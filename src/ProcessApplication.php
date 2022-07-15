@@ -40,9 +40,17 @@ class ProcessApplication extends AbstractApplication
         parent::__construct($config);
 
         //TODO путь можно будет брать из $config['logDirectory'] после рефакторинга супервизора, см. Service::runProcess
-        $this->logger->init([
-            'path' => '@site/log/process/' . $this->name . '_' . $this->index,
-        ]);
+        $this->logger->setFilePath('@site/log/process/' . $this->name . '_' . $this->index);
+    }
+
+    protected function init(): void
+    {
+        $this->checkSingleConstraint();
+        if (isset($this->index)) {
+            $this->processSupervisor->reborn($this);
+        } else {
+            $this->processSupervisor->register($this);
+        }
     }
 
     public function getDefaultFusionComponents(): array
@@ -50,8 +58,6 @@ class ProcessApplication extends AbstractApplication
         return array_merge(parent::getDefaultFusionComponents(), [
             'processSupervisor' => ProcessSupervisor::class,
             'router' => Router::class,
-            'language' => Language::class,
-            'i18nMap' => ApplicationI18nMap::class,
             'user' => UserInterface::class,
         ]);
     }
@@ -162,16 +168,6 @@ class ProcessApplication extends AbstractApplication
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * PROTECTED and PRIVATE
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-    protected function init(): void
-    {
-        $this->checkSingleConstraint();
-        if (isset($this->index)) {
-            $this->processSupervisor->reborn($this);
-        } else {
-            $this->processSupervisor->register($this);
-        }
-    }
 
     /**
      * @throws Exception
