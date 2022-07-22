@@ -24,11 +24,12 @@ class Respondent extends \lx\Respondent
             return $this->prepareWarningResponse('Service doesn\'t exist');
         }
 
-        if (!$service->hasProcess($processName)) {
+        $ps = $this->getProcessSupervisor();
+        if (!$ps->checkServiceHasProcess($service, $processName)) {
             return $this->prepareWarningResponse('Service doesn\'t have this process');
         }
 
-        $service->runProcess($processName);
+        $ps->runServiceProcess($service, $processName);
         return $this->prepareResponse('Ok');
     }
 

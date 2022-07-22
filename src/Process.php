@@ -2,6 +2,7 @@
 
 namespace lx\process;
 
+use lx;
 use lx\Math;
 use lx\process\interfaces\ProcessRepositoryInterface;
 
@@ -141,12 +142,14 @@ class Process
             return false;
         }
 
-        $service = \lx::$app->getService($this->getServiceName());
+        $service = lx::$app->getService($this->getServiceName());
         if (!$service) {
             return false;
         }
 
-        $service->runProcess($this->getName(), $this->getIndex());
+        /** @var ProcessSupervisor $ps */
+        $ps = lx::$app->processSupervisor;
+        $ps->runServiceProcess($service, $this->getName(), $this->getIndex());
         return true;
     }
 

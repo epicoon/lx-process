@@ -12,6 +12,9 @@ service:
   routes:
     supervisor: {plugin: supervisor}
 
+  commands:
+    run: lx\process\command\RunProcess
+
   plugins: plugin
   models: model
 

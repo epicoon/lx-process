@@ -2,6 +2,8 @@
 
 namespace lx\process;
 
+use lx;
+use lx\Service;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\Math;
@@ -18,6 +20,75 @@ class ProcessSupervisor implements FusionComponentInterface
         return [
             'repository' => ProcessRepositoryInterface::class,
         ];
+    }
+    
+    public function checkServiceHasProcess(Service $service, string $processName): bool
+    {
+        $processesConfig = $service->getConfig('processes') ?? [];
+        return array_key_exists($processName, $processesConfig);
+    }
+    
+    public function runServiceProcess(Service $service, string $name, ?int $index = null): ?string
+    {
+        $processesConfig = $service->getConfig('processes') ?? [];
+        if (!array_key_exists($name, $processesConfig)) {
+            \lx::devLog(['_' => [__FILE__,__CLASS__,__METHOD__,__LINE__],
+                '__trace__' => debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT&DEBUG_BACKTRACE_IGNORE_ARGS),
+                'msg' => "Service process '$name' does not exist",
+            ]);
+            return null;
+        }
+
+        $processData = $processesConfig[$name];
+        $processClassName = $processData['class'];
+        $processConfig = $processData['config'] ?? [];
+
+        $processConfig['serviceName'] = $service->name;
+        $processConfig['processName'] = $name;
+        if ($index !== null) {
+            $processConfig['processIndex'] = $index;
+        }
+
+        $asyncFlag = $processConfig['async'] ?? true;
+        if ($asyncFlag) {
+            $async = [];
+            if (array_key_exists('out', $processConfig)) {
+                $out = $processConfig['out'];
+                unset($processConfig['out']);
+                $async = [
+                    'message_log' => $out['message_log'] ?? '/dev/null',
+                    'error_log' => $out['error_log'] ?? '/dev/null',
+                ];
+            }
+        }
+
+        //TODO $index надо узнавать точно. Если он неизвестен, то не факт, что это 1
+        // через processSupervisor можно сделать, но тогда ему надо вести счетчики, и, по хорошему, самому быть
+        // запущенным в виде процесса, чтобы избежать дедлока по выдаче индексов
+        if (!array_key_exists('logDirectory', $processConfig)) {
+            $processConfig['logDirectory'] = '@site/log/process/' . $name . '_' . ($index ?? 1);
+        }
+
+        if ($asyncFlag && empty($async)) {
+            $async = [
+                'message_log_file' => $processConfig['logDirectory'] . '/_dump.log',
+                'error_log_file' => $processConfig['logDirectory'] . '/_error.log',
+            ];
+        }
+
+        $args = [$processClassName];
+        if (!empty($processConfig)) {
+            $args[] = json_encode($processConfig);
+        }
+
+        return lx::exec(
+            [
+                'executor' => 'php',
+                'script' => lx::$app->conductor->getFullPath('@core/../process.php'),
+                'args' => $args
+            ],
+            $asyncFlag ? $async : false
+        );
     }
 
     public function getRepository(): ProcessRepositoryInterface
