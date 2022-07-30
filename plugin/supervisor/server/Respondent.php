@@ -4,20 +4,20 @@ namespace lx\process\plugin\supervisor\server;
 
 use lx;
 use lx\process\ProcessSupervisor;
-use lx\ResponseInterface;
+use lx\HttpResponseInterface;
 
 class Respondent extends \lx\Respondent
 {
     private $processSupervisor;
 
-	public function loadProcessesData(): ResponseInterface
+	public function loadProcessesData(): HttpResponseInterface
 	{
 	    $ps = $this->getProcessSupervisor();
 	    $map = $ps->getProcessesData();
 		return $this->prepareResponse($map);
 	}
 
-	public function addProcess(string $serviceName, string $processName): ResponseInterface
+	public function addProcess(string $serviceName, string $processName): HttpResponseInterface
     {
         $service = lx::$app->getService($serviceName);
         if (!$service) {
@@ -33,7 +33,7 @@ class Respondent extends \lx\Respondent
         return $this->prepareResponse('Ok');
     }
 
-    public function deleteProcess(string $processName, int $processIndex): ResponseInterface
+    public function deleteProcess(string $processName, int $processIndex): HttpResponseInterface
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->deleteProcess($processName, $processIndex);
@@ -44,7 +44,7 @@ class Respondent extends \lx\Respondent
         return $this->prepareResponse('Ok');
     }
 
-    public function sendMessage(string $processName, int $processIndex, string $message): ResponseInterface
+    public function sendMessage(string $processName, int $processIndex, string $message): HttpResponseInterface
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->sendMessageToProcess($processName, $processIndex, $message);
@@ -55,7 +55,7 @@ class Respondent extends \lx\Respondent
         return $this->prepareResponse('Ok');
     }
 
-    public function rerunProcess(string $processName, int $processIndex): ResponseInterface
+    public function rerunProcess(string $processName, int $processIndex): HttpResponseInterface
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->rerunProcess($processName, $processIndex);
@@ -66,7 +66,7 @@ class Respondent extends \lx\Respondent
         return $this->prepareResponse('Ok');
     }
 
-    public function stopProcess(string $processName, int $processIndex): ResponseInterface
+    public function stopProcess(string $processName, int $processIndex): HttpResponseInterface
     {
         $ps = $this->getProcessSupervisor();
         $result = $ps->stopProcess($processName, $processIndex);
