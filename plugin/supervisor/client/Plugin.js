@@ -1,7 +1,7 @@
 #lx:use lx.Form;
 
 class Plugin extends lx.Plugin {
-	initCssAsset(css) {
+	initCss(css) {
 		css.addClass('lx-process-slot', {
 			overflow: 'hidden',
 			whiteSpace: 'nowrap',
