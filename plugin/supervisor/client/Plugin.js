@@ -122,7 +122,7 @@ function __init(plugin) {
 		var messageBox = plugin->>messageBox;
 		var message = messageBox->>messageTextBox.value();
 		if (message == '') {
-			lx.Tost.warning('Message is empty');
+			lx.tostWarning('Message is empty');
 			return;
 		}
 
@@ -132,11 +132,11 @@ function __init(plugin) {
 		^Respondent.sendMessage(proc.name, proc.index, message).then(res=>{
 			plugin.root->blocker.hide();
 			if (!res.success) {
-				lx.Tost.error(res.data || 'Unknown error');
+				lx.tostError(res.data || 'Unknown error');
 				return;
 			}
 
-			lx.Tost('Message sent');
+			lx.tostMessage('Message sent');
 		});
 	});
 
@@ -145,11 +145,11 @@ function __init(plugin) {
 			var serviceName = values[0],
 				processName = values[1];
 			if (serviceName == '') {
-				lx.Tost.warning('Service name is empty');
+				lx.tostWarning('Service name is empty');
 				return;
 			}
 			if (processName == '') {
-				lx.Tost.warning('Process name is empty');
+				lx.tostWarning('Process name is empty');
 				return;
 			}
 
@@ -157,12 +157,12 @@ function __init(plugin) {
 			^Respondent.addProcess(serviceName, processName).then(res=>{
 				plugin.root->blocker.hide();
 				if (!res.success) {
-					lx.Tost.error(res.data || 'Unknown error');
+					lx.tostError(res.data || 'Unknown error');
 					return;
 				}
 
 				__loadProcessesData(plugin);
-				lx.Tost('Process has added');
+				lx.tostMessage('Process has added');
 			});
 		});
 	});
@@ -186,16 +186,16 @@ function __onProcessRun(self, plugin) {
 	^Respondent.rerunProcess(proc.name, proc.index).then(res=>{
 		plugin.root->blocker.hide();
 		if (!res.success) {
-			lx.Tost.error(res.data || 'Unknown error');
+			lx.tostError(res.data || 'Unknown error');
 			return;
 		}
 		__loadProcessesData(plugin);
 	}).catch(res=>{
 		plugin.root->blocker.hide();
 		if (res == '')
-			lx.Tost.error('Internal server error');
+			lx.tostError('Internal server error');
 		else
-			lx.Tost.error('Unknown error');
+			lx.tostError('Unknown error');
 	});
 }
 
@@ -206,7 +206,7 @@ function __onProcessStop(self, plugin) {
 	^Respondent.stopProcess(proc.name, proc.index).then(res=>{
 		plugin.root->blocker.hide();
 		if (!res.success) {
-			lx.Tost.error(res.data || 'Unknown error');
+			lx.tostError(res.data || 'Unknown error');
 			return;
 		}
 
@@ -221,7 +221,7 @@ function __onProcessClose(self, plugin) {
 	^Respondent.deleteProcess(proc.name, proc.index).then(res=>{
 		plugin.root->blocker.hide();
 		if (!res.success) {
-			lx.Tost.error(res.data || 'Unknown error');
+			lx.tostError(res.data || 'Unknown error');
 			return;
 		}
 
