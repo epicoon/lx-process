@@ -2,11 +2,13 @@
 
 namespace lx\process;
 
+use lx\CommandExecutor;
+
 class ProcessHelper
 {
     public static function getCurrentPids(): array
     {
-        $currentProcesses = \lx::exec('ps -ax');
+        $currentProcesses = (new CommandExecutor(['command' => 'ps -ax']))->run();
         $currentProcesses = explode(PHP_EOL, $currentProcesses);
         $result = [];
         foreach ($currentProcesses as $key => $row) {
