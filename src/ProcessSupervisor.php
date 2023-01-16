@@ -70,8 +70,13 @@ class ProcessSupervisor implements FusionComponentInterface
         ]);
 
         if (array_key_exists('output', $processConfig)) {
-            $executor->setMessageOutput($processConfig['output'][0]);
-            $executor->setErrorOutput($processConfig['output'][1]);
+            if (is_array($processConfig['output'])) {
+                $executor->setMessageOutput($processConfig['output'][0]);
+                $executor->setErrorOutput($processConfig['output'][1]);
+            } elseif ($processConfig['output']) {
+                $executor->setMessageOutput($processConfig['logDirectory'] . '/_dump.log');
+                $executor->setErrorOutput($processConfig['logDirectory'] . '/_error.log');
+            }
         }
         if (array_key_exists('messageOutput', $processConfig)) {
             $executor->setMessageOutput($processConfig['messageOutput']);
@@ -81,7 +86,6 @@ class ProcessSupervisor implements FusionComponentInterface
         }
 
         return $executor->run();
-
     }
 
     public function getRepository(): ProcessRepositoryInterface

@@ -6,11 +6,13 @@ use lx\AbstractApplication;
 use lx\ApplicationI18nMap;
 use lx\AuthenticationInterface;
 use lx\AuthorizationInterface;
+use lx\ErrorHelper;
 use lx\Language;
 use lx\Router;
 use lx\UserInterface;
-use Exception;
 use lx\UserManagerInterface;
+use Exception;
+use Throwable;
 
 /**
  * @property-read ProcessSupervisor $processSupervisor
@@ -91,12 +93,13 @@ class ProcessApplication extends AbstractApplication
      */
     protected function processRequest($request)
     {
-        $controller = $this->requestController;
-        if (!$controller) {
+        //TODO
+        $router = $this->router;
+        if (!$router) {
             return null;
         }
 
-        return $controller->run($request);
+        return $router->route($request);
     }
 
     protected function afterProcess(): void
@@ -134,30 +137,10 @@ class ProcessApplication extends AbstractApplication
         $this->beforeProcess();
 
         while ($this->keepAlive) {
-            usleep($this->delay);
-
-            $this->process();
-
-            $messages = $this->processSupervisor->readMessagesForProcessApplication($this->name, $this->index, true);
-            foreach ($messages as $messageData) {
-                $type = $messageData['type'];
-                $message = $messageData['data'];
-                if ($type == ProcessConst::MESSAGE_TYPE_SPECIAL) {
-                    if ($message == ProcessConst::DIRECTIVE_STOP) {
-                        $this->keepAlive = false;
-                        break;
-                    }
-                } elseif ($type == ProcessConst::MESSAGE_TYPE_REQUEST) {
-                    $response = $this->processRequest($message);
-                    $this->processSupervisor->sendResponseFromProcessApplication(
-                        $this->name,
-                        $this->index,
-                        $messageData['meta'],
-                        $response
-                    );
-                } elseif ($type == ProcessConst::MESSAGE_TYPE_COMMON) {
-                    $this->processMessage($message);
-                }
+            try {
+                $this->iteration();
+            } catch (Throwable $e) {
+                $this->log(ErrorHelper::renderErrorString($e), 'error');
             }
         }
 
@@ -166,8 +149,37 @@ class ProcessApplication extends AbstractApplication
 
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * PROTECTED and PRIVATE
+     * PRIVATE
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    private function iteration(): void
+    {
+        usleep($this->delay);
+
+        $this->process();
+
+        $messages = $this->processSupervisor->readMessagesForProcessApplication($this->name, $this->index, true);
+        foreach ($messages as $messageData) {
+            $type = $messageData['type'];
+            $message = $messageData['data'];
+            if ($type == ProcessConst::MESSAGE_TYPE_SPECIAL) {
+                if ($message == ProcessConst::DIRECTIVE_STOP) {
+                    $this->keepAlive = false;
+                    break;
+                }
+            } elseif ($type == ProcessConst::MESSAGE_TYPE_REQUEST) {
+                $response = $this->processRequest($message);
+                $this->processSupervisor->sendResponseFromProcessApplication(
+                    $this->name,
+                    $this->index,
+                    $messageData['meta'],
+                    $response
+                );
+            } elseif ($type == ProcessConst::MESSAGE_TYPE_COMMON) {
+                $this->processMessage($message);
+            }
+        }
+    }
 
     /**
      * @throws Exception
