@@ -5,6 +5,7 @@ namespace lx\process;
 use lx;
 use lx\Math;
 use lx\process\interfaces\ProcessRepositoryInterface;
+use DateTime;
 
 class Process
 {
@@ -15,6 +16,7 @@ class Process
     private int $index;
     private int $statusInMap;
     private int $statusCurrent;
+    private ?DateTime $_createdAt;
 
     public function __construct(
         ProcessRepositoryInterface $repository,
@@ -22,7 +24,8 @@ class Process
         string $serviceName,
         string $name,
         int $index,
-        int $status
+        int $status,
+        DateTime $createdAt
     ) {
         $this->repository = $repository;
         $this->pid = $pid;
@@ -31,6 +34,7 @@ class Process
         $this->index = $index;
         $this->statusInMap = $status;
         $this->statusCurrent = $status;
+        $this->_createdAt = $createdAt;
     }
     
     public function getPid(): int
@@ -68,6 +72,14 @@ class Process
         return $this->index;
     }
 
+    public function createdAt(): ?DateTime
+    {
+        if (!$this->isActive()) {
+            return null;
+        }
+        return $this->_createdAt;
+    }
+    
     public function setPid(int $pid): void
     {
         $this->pid = $pid;
@@ -198,7 +210,8 @@ class Process
             $this->serviceName,
             $this->name,
             $this->index,
-            $this->statusCurrent
+            $this->statusCurrent,
+            $this->_createdAt,
         ];
     }
 
@@ -210,6 +223,7 @@ class Process
             'index' => $this->index,
             'pid' => $this->pid,
             'status' => $this->statusCurrent,
+            'createdAt' => $this->_createdAt,
         ];
     }
 

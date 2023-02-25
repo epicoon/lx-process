@@ -3,6 +3,9 @@
 namespace lx\process;
 
 use lx\process\interfaces\ProcessRepositoryInterface;
+use DateTime;
+use DateTimeZone;
+use DateTimeImmutable;
 
 class ProcessMap
 {
@@ -19,7 +22,11 @@ class ProcessMap
         ];
 
         foreach ($map as $row) {
-            $this->addRecord($row[0], $row[1], $row[2], $row[3], $row[4]);
+            $dateInfo = $row[5];
+            $date = DateTime::createFromImmutable(
+                new DateTimeImmutable($dateInfo['date'] . ' ' . $dateInfo['timezone'])
+            );
+            $this->addRecord($row[0], $row[1], $row[2], $row[3], $date, $row[4]);
         }
     }
 
@@ -43,13 +50,14 @@ class ProcessMap
         return max(array_keys($this->map['name'][$name]));
     }
 
-    public function addProcess(ProcessApplication $process): void
+    public function addProcess(ProcessApplication $processApp): void
     {
         $this->addRecord(
-            $process->getPid(),
-            $process->getServiceName(),
-            $process->getName(),
-            $process->getIndex()
+            $processApp->getPid(),
+            $processApp->getServiceName(),
+            $processApp->getName(),
+            $processApp->createdAt(),
+            $processApp->getIndex()
         );
     }
 
@@ -99,6 +107,7 @@ class ProcessMap
         string $serviceName,
         string $name,
         int $index,
+        DateTime $createdAt,
         int $status = ProcessConst::PROCESS_STATUS_ACTIVE
     ): void
     {
@@ -109,7 +118,8 @@ class ProcessMap
             $serviceName,
             $name,
             $index,
-            $status
+            $status,
+            $createdAt
         );
 
         if (!array_key_exists($name, $this->map['name'])) {

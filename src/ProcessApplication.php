@@ -13,6 +13,7 @@ use lx\UserInterface;
 use lx\UserManagerInterface;
 use Exception;
 use Throwable;
+use DateTime;
 
 /**
  * @property-read ProcessSupervisor $processSupervisor
@@ -25,6 +26,7 @@ class ProcessApplication extends AbstractApplication
     private bool $keepAlive;
     private int $delay;
     private bool $single;
+    private DateTime $_createdAt;
 
     public function __construct(iterable $config = [])
     {
@@ -39,6 +41,7 @@ class ProcessApplication extends AbstractApplication
             $this->index = $config['processIndex'];
         }
 
+        $this->_createdAt = new DateTime();
         parent::__construct($config);
 
         //TODO путь можно будет брать из $config['logDirectory'] после рефакторинга супервизора, см. Service::runProcess
@@ -62,6 +65,11 @@ class ProcessApplication extends AbstractApplication
             'router' => Router::class,
             'user' => UserInterface::class,
         ]);
+    }
+
+    public function createdAt(): DateTime
+    {
+        return $this->_createdAt;
     }
 
 
