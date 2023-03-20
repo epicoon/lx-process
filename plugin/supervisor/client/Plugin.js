@@ -141,7 +141,7 @@ function __init(plugin) {
 	});
 
 	plugin->>butAddProcess.click(()=>{
-		plugin.root->inputPopup.open(['Service name', 'Process name']).confirm((values)=>{
+		lx.InputPopup.open(['Service name', 'Process name']).confirm((values)=>{
 			var serviceName = values[0],
 				processName = values[1];
 			if (serviceName == '') {

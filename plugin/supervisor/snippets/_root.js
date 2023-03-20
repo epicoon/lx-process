@@ -22,7 +22,6 @@ messageBox.setSnippet('messageBox');
 messageBox.hide();
 
 #lx:use lx.InputPopup;
-new lx.InputPopup();
 
 var blocker = new lx.Box({
 	key: 'blocker',
