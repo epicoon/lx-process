@@ -56,8 +56,8 @@ class ProcessMap
             $processApp->getPid(),
             $processApp->getServiceName(),
             $processApp->getName(),
-            $processApp->createdAt(),
-            $processApp->getIndex()
+            $processApp->getIndex(),
+            $processApp->createdAt()
         );
     }
 
