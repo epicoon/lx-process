@@ -17,8 +17,7 @@ class RunProcess extends NativeCommand
     protected function defineArguments(): array
     {
         return [
-            (CommandArgument::getServiceArgument())
-                ->setMandatory(),
+            (CommandArgument::service())->setMandatory(),
             (new CommandArgument())
                 ->setKeys(['process', 'p', 1])
                 ->setType(CommandArgument::TYPE_STRING)
@@ -27,7 +26,7 @@ class RunProcess extends NativeCommand
         ];
     }
 
-    protected function run()
+    protected function process()
     {
         /** @var ProcessSupervisor $processSupervisor */
         $processSupervisor = lx::$app->processSupervisor;
